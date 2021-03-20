@@ -1,0 +1,44 @@
+const { admin, headman } = require('../data/roles');
+const permissions = require('../utility/permissions');
+
+module.exports = {
+  name: 'clear',
+  description: 'Удаляет указанное количество сообщений',
+  usage: '[count]',
+  roles: [admin, headman],
+  async execute(message, args) {
+    if (!message.guild) {
+      message.channel.send('Команда не для личных сообщений');
+      return;
+    }
+
+    if (!args[0]) {
+      message.reply('необходимо указать количество сообщений для удаления');
+      return;
+    }
+
+    // if has no permission -> return
+    const hasPermission = permissions.check(message.guild.member(message.author), this.roles);
+    const deleteCount = parseInt(args[0], 10);
+
+    if (!hasPermission) {
+      message.reply('у тебя недостаточно прав для таких приколов');
+      return;
+    }
+
+    if (deleteCount < 2) {
+      message.reply('количество сообщений для удаления должно быть больше одного');
+      return;
+    }
+
+    const fetched = await message.channel.messages.fetch({ limit: deleteCount + 1 });
+
+    try {
+      await message.channel.bulkDelete(fetched, true)
+        .then(() => message.channel.send(`Удалено сообщений: ${deleteCount}`));
+    } catch (err) {
+      console.error(err);
+      message.channel.send('Ошибка при удалении сообщений');
+    }
+  },
+};
