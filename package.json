@@ -14,6 +14,16 @@
     "bot",
     "nodejs"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alaladdin/mpei-discord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Alaladdin/mpei-discord.git/issues"
+  },
+  "engines": {
+    "node": "15.x"
+  },
   "author": "Alaladdin",
   "license": "ISC",
   "dependencies": {
