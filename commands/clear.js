@@ -26,8 +26,8 @@ module.exports = {
       return;
     }
 
-    if (deleteCount < 2) {
-      message.reply('количество сообщений для удаления должно быть больше одного');
+    if (deleteCount < 2 || deleteCount >= 99) {
+      message.reply('количество сообщений для удаления должно быть больше одного и меньше 100');
       return;
     }
 
