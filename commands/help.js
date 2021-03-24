@@ -5,29 +5,28 @@ const allowedCommands = require('../utility/allowedCommands');
 module.exports = {
   name: 'help',
   aliases: ['h', 'commands'],
-  description: 'Получаем информацию о командах',
-  usage: '[command]',
-
+  description: 'Получает список доступных пользователю команд',
+  arguments: [
+    {
+      name: '[command]',
+      description: 'информация об определенной команде',
+    },
+  ],
   execute(message, args) {
     const data = [];
     const { commands } = message.client;
 
-    if (!message.guild) {
-      message.reply('команда должна быть вызвана с сервера');
-      return;
-    }
-
     if (!args.length) {
-      const userAllowedCommands = allowedCommands.get(
-        message.guild.member(message.author),
-        commands,
-      );
+      const user = message.guild ? message.guild.member(message.author) : message.author;
+      const userAllowedCommands = allowedCommands.get(user, commands);
 
       data.push('Список моих командуcов:');
-      data.push(userAllowedCommands.map((command) => `\`${command.name}\``).join('\n'));
-      data.push(`\nТы можешь отправить мне \`${prefix}help [название команды]\`, чтобы получить информацию по определенной команде`);
+      data.push(userAllowedCommands.map((command) => `\`${command.name}\` - ${command.description}`)
+        .join('\n'));
+      data.push(`\nОтправь мне \`${prefix}help [название команды]\`, чтобы получить информацию по определенной команде`);
 
-      return message.channel.send(data, { split: true });
+      message.channel.send(data, { split: true });
+      return;
     }
 
     const name = args[0].toLowerCase();
@@ -35,19 +34,47 @@ module.exports = {
       (c) => c.aliases && c.aliases.includes(name),
     );
 
-    if (!command) return message.reply('я не нашел эту команду в своем крутейшем списке');
+    if (!command) {
+      message.reply('я не нашел эту команду в своем крутейшем списке');
+      return;
+    }
 
     data.push(`**Name:** ${command.name}`);
-
     if (command.description) data.push(`**Description:** ${command.description}`);
     if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
+
     if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
+
+    // command arguments
+    if (command.arguments) {
+      const commandArgs = [];
+      Object.values(command.arguments).forEach((c) => {
+        commandArgs.push(`\`${c.name}\` - ${c.description}`);
+
+        // if roles set and called from server
+        if (c.roles && message.guild) {
+          commandArgs.push(`Роли: \`${c.roles.map((r) => roleById
+            .get(message, r).name)
+            .join('`, `')}\`\n`);
+        }
+      });
+      data.push(`**Arguments:** \n${commandArgs.join('\n')}`);
+    }
+
+    // we cannot check roles wo server -> send data
+    if (!message.guild) {
+      message.channel.send(data, { split: true });
+      return;
+    }
+
+    // command roles
     if (command.roles) {
       const roleNames = [];
       command.roles.forEach((role) => roleNames.push(roleById.get(message, role).name));
-      data.push(`**Required role:** ${roleNames.join(', ')}`);
+      data.push(`**Roles:** ${roleNames.join(', ')}`);
     }
 
-    return message.channel.send(data, { split: true });
+    // send data
+    message.channel.send(data, { split: true });
   },
 };

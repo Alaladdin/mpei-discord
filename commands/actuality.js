@@ -5,41 +5,58 @@ const { serverAddress } = require('../config');
 
 module.exports = {
   name: 'actuality',
-  description: 'Получает "актуалочку"',
-  // usage: {
-  //   everyone: '',
-  //   admin: '',
-  //   mod: '',
-  // }
+  description: 'Выводит "актуалочку"',
   aliases: ['a', 'act', 'news', 'акт'],
-  hiddenRoles: {
-    set: [admin, headman],
+  arguments: {
+    set: {
+      name: 'set',
+      description: 'обновляет данные актуалочки',
+      roles: [admin, headman],
+    },
+    watch: {
+      name: 'watch',
+      description: 'следит за изменениями актуалочки и обновляет данные сам',
+      roles: [admin, headman],
+    },
   },
   async execute(message, args) {
+    const [command, messageId] = args;
+
     // if arguments not passed -> get actuality list
     if (!args.length) {
       const { actuality } = await this.get(message) || {};
 
-      // if actuality data exists
-      if (actuality && 'content' in actuality) {
-        message.channel.send(actuality.content);
-      } else {
-        message.reply('непредвиденская ошибка. Кто-то украл данные из БД');
-      }
+      message.channel.send('Получаю данные с сервера')
+        .then((sentMessage) => {
+          let msg = '';
+
+          // if actuality data exists
+          msg = (actuality && 'content' in actuality)
+            ? actuality.content
+            : 'Непредвиденская ошибка. Кто-то украл данные из БД';
+
+          sentMessage.edit(msg);
+        });
+
       return;
     }
 
     // actuality commands set up
-    const [command, messageId] = args;
     if (command !== 'set') {
-      message.reply(`не знаю, что за команда такая "${command}"`);
+      message.reply(`не знаю, что за аргумент такой \`${command}\``);
+      return;
+    }
+
+    // if set command called from DM
+    if (command === 'set' && !message.guild) {
+      message.reply('Команда должна быть вызвана с сервера');
       return;
     }
 
     // check user permission to this command
     const hasPermission = permissions.check(
       message.guild.member(message.author),
-      this.hiddenRoles.set,
+      this.arguments.set.roles,
     );
 
     // if no permission -> break
@@ -49,7 +66,7 @@ module.exports = {
     }
 
     // else -> set new actuality
-    this.set(message, messageId);
+    await this.set(message, messageId);
   },
   async get(message) {
     // get actuality data
@@ -64,12 +81,9 @@ module.exports = {
         }
         return json;
       })
-      .catch((err) => {
-        console.error(err);
-        message.reply('ошибка при попытке получить актуалочку');
-      });
+      .catch(console.error);
   },
-  set(message, messageId) {
+  async set(message, messageId) {
     try {
       // get user message first
       message.channel.messages

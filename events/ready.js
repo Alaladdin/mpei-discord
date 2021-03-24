@@ -1,11 +1,12 @@
+const activities = require('../data/actvities');
+const { isProd } = require('../config');
+
 module.exports = {
   name: 'ready',
   once: true,
-  execute(client) {
-    client.user.setPresence({
-      activity: {
-        name: 'with your mother',
-      },
+  async execute(client) {
+    await client.user.setPresence({
+      activity: isProd ? activities.default : activities.developing,
       status: 'dnd',
     });
     console.log(`Ready! Logged in as ${client.user.tag}`);

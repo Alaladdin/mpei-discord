@@ -3,7 +3,7 @@ const permissions = require('../utility/permissions');
 
 module.exports = {
   name: 'clear',
-  description: 'Удаляет указанное количество сообщений',
+  description: 'Удаляет указанное количество сообщений (2-99)',
   usage: '[count]',
   roles: [admin, headman],
   async execute(message, args) {
