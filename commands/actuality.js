@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const permissions = require('../utility/permissions');
 const { admin, headman } = require('../data/roles');
+const { random, accessError } = require('../data/phrases');
 const { serverAddress } = require('../config');
 
 module.exports = {
@@ -24,18 +25,12 @@ module.exports = {
 
     // if arguments not passed -> get actuality list
     if (!args.length) {
-      const { actuality } = await this.get(message) || {};
-
       message.channel.send('Получаю данные с сервера')
-        .then((sentMessage) => {
-          let msg = '';
-
-          // if actuality data exists
-          msg = (actuality && 'content' in actuality)
-            ? actuality.content
-            : 'Непредвиденская ошибка. Кто-то украл данные из БД';
-
-          sentMessage.edit(msg);
+        .then(async (sentMessage) => {
+          const { actuality } = await this.get(message) || {};
+          sentMessage.edit((actuality && 'content' in actuality)
+            ? `\`\`\`${actuality.content}\`\`\``
+            : 'Непредвиденская ошибка. Кто-то украл данные из БД');
         });
 
       return;
@@ -47,21 +42,13 @@ module.exports = {
       return;
     }
 
-    // if set command called from DM
-    if (command === 'set' && !message.guild) {
-      message.reply('Команда должна быть вызвана с сервера');
-      return;
-    }
-
     // check user permission to this command
-    const hasPermission = permissions.check(
-      message.guild.member(message.author),
-      this.arguments.set.roles,
-    );
+    const user = message.guild ? message.guild.member(message.author) : message.author;
+    const hasPermission = permissions.check(user, this.arguments.set.roles);
 
     // if no permission -> break
     if (!hasPermission) {
-      message.reply('у тебя недостаточно прав для таких приколов');
+      message.reply(random(accessError));
       return;
     }
 

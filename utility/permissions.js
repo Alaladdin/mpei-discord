@@ -4,9 +4,11 @@ module.exports = {
   check(member, roles) {
     let hasPermission = false;
 
-    roles.forEach((allowedRole) => {
-      if (member.roles.cache.has(allowedRole)) hasPermission = true;
-    });
+    if (member.roles) {
+      roles.forEach((allowedRole) => {
+        if (member.roles.cache.has(allowedRole)) hasPermission = true;
+      });
+    }
 
     return hasPermission;
   },

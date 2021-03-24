@@ -36,10 +36,10 @@ module.exports = {
       return;
     }
 
-    const { schedule } = await this.get(message, start, finish) || {};
-
     message.channel.send('Получаю данные с сервера')
-      .then((sentMessage) => {
+      .then(async (sentMessage) => {
+        const { schedule } = await this.get(message, start, finish) || {};
+
         if (typeof schedule !== 'object' && !Array.isArray(schedule)) {
           sentMessage.edit('Ошибка при попытке получить расписание');
           return;

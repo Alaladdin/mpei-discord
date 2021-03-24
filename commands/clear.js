@@ -1,5 +1,6 @@
-const { admin, headman } = require('../data/roles');
 const permissions = require('../utility/permissions');
+const { random, accessError } = require('../data/phrases');
+const { admin, headman } = require('../data/roles');
 
 module.exports = {
   name: 'clear',
@@ -12,20 +13,23 @@ module.exports = {
       return;
     }
 
+    // if has no permission -> return
+    const hasPermission = permissions.check(message.guild.member(message.author), this.roles);
+
+    if (!hasPermission) {
+      message.reply(random(accessError));
+      return;
+    }
+
+    // if no count set
     if (!args[0]) {
       message.reply('необходимо указать количество сообщений для удаления');
       return;
     }
 
-    // if has no permission -> return
-    const hasPermission = permissions.check(message.guild.member(message.author), this.roles);
     const deleteCount = parseInt(args[0], 10);
 
-    if (!hasPermission) {
-      message.reply('у тебя недостаточно прав для таких приколов');
-      return;
-    }
-
+    // if count is not valid
     if (deleteCount < 2 || deleteCount > 99) {
       message.reply('количество сообщений для удаления должно быть больше одного и меньше ста');
       return;
