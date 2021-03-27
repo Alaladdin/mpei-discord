@@ -18,41 +18,47 @@ module.exports = {
     },
   ],
   async execute(message, args) {
-    const today = new Date();
-    const todayFormatted = pdate.format(today.toString());
-    const tomorrow = pdate.format(new Date().setDate(today.getDate() + 1));
-
+    const today = pdate.format(new Date().toString());
+    const tomorrow = pdate.format(new Date().setDate(new Date().getDate() + 1));
     const [command] = args;
-    let [start, finish] = ['', ''];
 
-    if (!args.length) {
-      // check today's schedule
-      [start, finish] = [todayFormatted, todayFormatted];
-    } else if (['week', 'tw'].includes(command)) {
-      // check tomorrow's schedule
-      if (command === 'tw') [start, finish] = [tomorrow, tomorrow];
-    } else {
+    const argsInstructions = {
+      week: {
+        name: 'неделю',
+      },
+      tw: {
+        name: 'завтра',
+        start: tomorrow,
+        finish: tomorrow,
+      },
+      empty: {
+        name: 'сегодня',
+        start: today,
+        finish: today,
+      },
+    };
+
+    if (command && (command === 'empty' || !argsInstructions[command])) {
       message.reply(`не знаю, что за аргумент такой \`${command}\``);
       return;
     }
 
+    // return message
     message.channel.send('Получаю данные с сервера')
       .then(async (sentMessage) => {
-        const { schedule } = await this.get(message, start, finish) || {};
+        const selectedDate = argsInstructions[!args.length ? 'empty' : command];
+        const { schedule } = await this.get(selectedDate) || {};
 
         if (typeof schedule !== 'object' && !Array.isArray(schedule)) {
           sentMessage.edit('Ошибка при попытке получить расписание');
           return;
         }
-        const scheduleDate = start === todayFormatted
-          ? 'сегодня' : start === tomorrow
-            ? 'завтра' : 'неделю';
 
-        sentMessage.edit(`\`Расписание на ${scheduleDate}\``);
+        sentMessage.edit(`\`Расписание на ${selectedDate.name}\``);
 
         // if schedule data exists
         if (Array.isArray(schedule) && schedule.length <= 0) {
-          message.reply('пар нет');
+          message.channel.send('Занятий нет');
           return;
         }
 
@@ -63,17 +69,14 @@ module.exports = {
             discipline,
             dayOfWeekString,
             kindOfWork,
-            building,
             beginLesson,
             endLesson,
             lecturer,
           } = item;
 
           itemData.push('```');
-          // itemData.push(`Группа: ${item.stream.replace(',', ', ')}`);
           itemData.push(`[${dayOfWeekString}] ${discipline} - ${pdate.format(date, 'ru-RU')}`);
           itemData.push(kindOfWork);
-          if (building && building !== '-') itemData.push(`Здание: ${building}`);
           itemData.push(`${beginLesson} - ${endLesson}`);
           itemData.push(lecturer);
           itemData.push('```');
@@ -82,7 +85,7 @@ module.exports = {
         });
       });
   },
-  async get(message, start, finish) {
+  async get({ start, finish }) {
     const url = new URL(`${serverAddress}/api/getSchedule/`);
 
     if (start) url.searchParams.append('start', start);

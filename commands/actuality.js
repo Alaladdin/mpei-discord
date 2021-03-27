@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const permissions = require('../utility/permissions');
+const pdate = require('../utility/pdate');
 const { admin, headman } = require('../data/roles');
 const { random, accessError } = require('../data/phrases');
 const { serverAddress } = require('../config');
@@ -28,9 +29,18 @@ module.exports = {
       message.channel.send('Получаю данные с сервера')
         .then(async (sentMessage) => {
           const { actuality } = await this.get(message) || {};
-          sentMessage.edit((actuality && 'content' in actuality)
-            ? `\`\`\`${actuality.content}\`\`\``
-            : 'Непредвиденская ошибка. Кто-то украл данные из БД');
+          const msg = [];
+
+          if (actuality && 'content' in actuality) {
+            msg.push('```');
+            msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
+            msg.push(actuality.content);
+            msg.push('```');
+          } else {
+            msg.push('Непредвиденская ошибка. Кто-то украл данные из БД');
+          }
+
+          sentMessage.edit(msg.join('\n'));
         });
 
       return;
