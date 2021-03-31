@@ -1,15 +1,11 @@
 module.exports = {
   name: 'permissions',
   description: 'get user permission by role',
-  check(member, roles) {
-    let hasPermission = false;
+  check(message, permissions) {
+    if (!message.guild) return false;
 
-    if (member.roles) {
-      roles.forEach((allowedRole) => {
-        if (member.roles.cache.has(allowedRole)) hasPermission = true;
-      });
-    }
+    const member = message.guild.member(message.author);
 
-    return hasPermission;
+    return !!(member.roles && member.permissions.has(permissions));
   },
 };

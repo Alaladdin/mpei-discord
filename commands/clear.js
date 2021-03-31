@@ -1,12 +1,11 @@
 const permissions = require('../utility/permissions');
 const { random, accessError } = require('../data/phrases');
-const { admin, headman } = require('../data/roles');
 
 module.exports = {
   name: 'clear',
   description: 'Удаляет указанное количество сообщений (2-99)',
   usage: '[count]',
-  roles: [admin, headman],
+  permissions: ['ADMINISTRATOR'],
   async execute(message, args) {
     if (!message.guild) {
       message.channel.send('Команда не для личных сообщений');
@@ -14,7 +13,7 @@ module.exports = {
     }
 
     // if has no permission -> return
-    const hasPermission = permissions.check(message.guild.member(message.author), this.roles);
+    const hasPermission = permissions.check(message, this.permissions);
 
     if (!hasPermission) {
       message.reply(random(accessError));

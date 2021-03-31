@@ -1,6 +1,4 @@
 const { prefix } = require('../config');
-const roleById = require('../utility/roleById');
-const allowedCommands = require('../utility/allowedCommands');
 
 module.exports = {
   name: 'help',
@@ -17,8 +15,14 @@ module.exports = {
     const { commands } = message.client;
 
     if (!args.length) {
-      const user = message.guild ? message.guild.member(message.author) : message.author;
-      const userAllowedCommands = allowedCommands.get(user, commands);
+      const userAllowedCommands = commands.filter((c) => {
+        if (message.guild) {
+          const member = message.guild.member(message.author);
+          return member.permissions.has(c.permissions);
+        }
+
+        return !c.permissions;
+      });
 
       data.push('Список моих командуcов:');
       data.push(userAllowedCommands.map((command) => `\`${command.name}\` - ${command.description}`)
@@ -43,35 +47,24 @@ module.exports = {
     if (command.description) data.push(`**Description:** ${command.description}`);
     if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
 
-    if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
+    if (command.usage) data.push(`**Usage:** \`${prefix}${command.name} ${command.usage}\``);
 
     // command arguments
     if (command.arguments) {
       const commandArgs = [];
       Object.values(command.arguments).forEach((c) => {
         commandArgs.push(`\`${c.name}\` - ${c.description}`);
-
-        // if roles set and called from server
-        if (c.roles && message.guild) {
-          commandArgs.push(`Роли: \`${c.roles.map((r) => roleById
-            .get(message, r).name)
-            .join('`, `')}\`\n`);
-        }
+        if (c.permissions) commandArgs.push(`Права: \`[${c.permissions.join(', ')}]\`\n`);
       });
       data.push(`**Arguments:** \n${commandArgs.join('\n')}`);
     }
 
     // we cannot check roles wo server -> send data
-    if (!message.guild) {
-      message.channel.send(data, { split: true });
-      return;
-    }
-
     // command roles
-    if (command.roles) {
-      const roleNames = [];
-      command.roles.forEach((role) => roleNames.push(roleById.get(message, role).name));
-      data.push(`**Roles:** ${roleNames.join(', ')}`);
+    if (command.permissions) {
+      const permissions = [];
+      command.permissions.forEach((p) => permissions.push(p));
+      data.push(`**Permissions:** \`[${permissions.join(', ')}]\``);
     }
 
     // send data

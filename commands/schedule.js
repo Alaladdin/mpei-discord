@@ -58,7 +58,7 @@ module.exports = {
 
         // if schedule data exists
         if (Array.isArray(schedule) && schedule.length <= 0) {
-          message.channel.send('Занятий нет');
+          message.channel.send('Занятий нет 😎');
           return;
         }
 
