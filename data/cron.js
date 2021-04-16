@@ -2,6 +2,7 @@ const schedule = require('node-schedule');
 const pdate = require('../utility/pdate');
 const pactuality = require('../functions/actuality');
 const { channelIds } = require('../config');
+const { getters, setters } = require('../store/index');
 const { notify } = require('./rights');
 
 module.exports = {
@@ -19,24 +20,27 @@ module.exports = {
         return;
       }
 
-      const channel = await client.channels.fetch(channelIds.actuality);
-      const channelAllMessages = await channel.messages.fetch({ limit: 100 });
-      const channelMessagesToDelete = await channel.messages.fetch({ limit: channelAllMessages.size - 1 });
+      if (actuality.shortId === getters.getSavedShortId()) return;
 
+      const channel = await client.channels.fetch(channelIds.dev);
+      const channelAllMessages = await channel.messages.fetch({ limit: 100 });
+      const channelMessagesToDelete = (channelAllMessages <= 2) ? await channel.messages.fetch({ limit: channelAllMessages.size - 1 }) : 0;
       const msg = [];
+
       msg.push('```');
       msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
       msg.push(`${actuality.content}`);
       msg.push('```');
 
       try {
-        if (channelAllMessages.size > 1) await channel.bulkDelete(channelMessagesToDelete, true);
+        if (channelMessagesToDelete.size > 1) await channel.bulkDelete(channelMessagesToDelete, true);
       } catch (err) {
         console.error(err);
         this.sendMessageToUsers(notifyTo, 'Ошибка при удалении сообщений в канале актуалочки', client);
       }
 
-      channel.send(msg, { split: true });
+      channel.send(msg, { split: true })
+        .then(() => setters.setSavedShortId(actuality.shortId));
     });
   },
   sendMessageToUsers(users, message, client) {

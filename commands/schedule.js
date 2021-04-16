@@ -46,9 +46,7 @@ module.exports = {
     message.channel.send('`Получаю данные с сервера...`')
       .then(async (sentMessage) => {
         const selectedDate = argsInstructions[!args.length ? 'empty' : command];
-        let { schedule } = await pschedule.get(selectedDate) || {};
-        const scheduleLength = schedule ? schedule.length : 0;
-        const scheduleIndexesToDelete = [];
+        const { schedule } = await pschedule.get(selectedDate) || {};
 
         if (typeof schedule !== 'object' && !Array.isArray(schedule)) {
           sentMessage.edit('`Ошибка при попытке получить расписание`');
@@ -62,27 +60,6 @@ module.exports = {
           message.channel.send('Занятий нет 😎');
           return;
         }
-
-        // compare two nearest array elements
-        for (let i = 0; i <= scheduleLength - 2; i += 2) {
-          const c = schedule[i]; // current elements
-          const n = schedule[i + 1]; // next element
-          if (!n) break; // stop loop, if next element not exists
-
-          if (
-            (c.date === n.date)
-            && (c.discipline === n.discipline)
-            && (c.kindOfWork === n.kindOfWork)
-            && (c.lecturer === n.lecturer)
-          ) {
-            // combine two array elements
-            schedule[i].endLesson = n.endLesson;
-            scheduleIndexesToDelete.push(i + 1);
-          }
-        }
-
-        // filter array
-        schedule = this.filterArray(schedule, scheduleIndexesToDelete);
 
         schedule.forEach((item) => {
           const itemData = [];
@@ -106,14 +83,5 @@ module.exports = {
           return message.channel.send(itemData, { split: true });
         });
       });
-  },
-  filterArray(arr = [], indexesArr = []) {
-    const newArr = [...arr];
-
-    for (let i = indexesArr.length - 1; i >= 0; i--) {
-      newArr.splice(indexesArr[i], 1);
-    }
-
-    return newArr;
   },
 };

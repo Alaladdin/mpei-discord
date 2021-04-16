@@ -69,7 +69,7 @@ module.exports = {
     await setActuality(message, messageId)
       .then(({ actuality } = {}) => {
         if (actuality && 'content' in actuality) {
-          message.reply('похоже, актуалочка успешно обновлена 🔥');
+          message.reply('актуалочка успешно обновлена 🔥');
         } else {
           message.reply('не удалось обновить актуалочку 😔');
         }
