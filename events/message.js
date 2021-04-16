@@ -1,9 +1,15 @@
+const { blacklist } = require('../data/rights');
 const { prefix } = require('../config');
 
 module.exports = {
   name: 'message',
   execute(msg, client) {
-    if (!msg.content.startsWith(prefix) || msg.author.bot) return;
+    const blacklistedIds = blacklist().map((user) => user.id);
+    if (
+      !msg.content.startsWith(prefix)
+      || msg.author.bot
+      || blacklistedIds.includes(msg.author.id)
+    ) return;
 
     const commandBody = msg.content.slice(prefix.length);
     const args = commandBody.split(' ');

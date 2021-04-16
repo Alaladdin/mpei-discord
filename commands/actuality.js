@@ -1,8 +1,7 @@
-const fetch = require('node-fetch');
 const permissions = require('../utility/permissions');
 const pdate = require('../utility/pdate');
 const { random, accessError } = require('../data/phrases');
-const { serverAddress } = require('../config');
+const { get: getActuality, set: setActuality } = require('../functions/actuality');
 
 module.exports = {
   name: 'actuality',
@@ -25,9 +24,9 @@ module.exports = {
 
     // if arguments not passed -> get actuality list
     if (!args.length) {
-      message.channel.send('Получаю данные с сервера')
+      message.channel.send('`Получаю данные с сервера...`')
         .then(async (sentMessage) => {
-          const { actuality } = await this.get(message) || {};
+          const { actuality } = await getActuality() || {};
           const msg = [];
 
           if (actuality && 'content' in actuality) {
@@ -51,6 +50,12 @@ module.exports = {
       return;
     }
 
+    // Если id не передано
+    if (!messageId || (messageId && messageId.length <= 0)) {
+      message.reply('Необходимо указать `id` сообщения');
+      return;
+    }
+
     // check user permission to this command
     const hasPermission = permissions.check(message, this.arguments.set.permissions);
 
@@ -61,49 +66,13 @@ module.exports = {
     }
 
     // else -> set new actuality
-    await this.set(message, messageId)
+    await setActuality(message, messageId)
       .then(({ actuality } = {}) => {
         if (actuality && 'content' in actuality) {
-          message.reply('похоже, актуалочка успешно обновлена 🎉');
+          message.reply('похоже, актуалочка успешно обновлена 🔥');
         } else {
           message.reply('не удалось обновить актуалочку 😔');
         }
       });
-  },
-  async get(message) {
-    // get actuality data
-    return fetch(`${serverAddress}/api/getActuality`)
-      .then(async (res) => {
-        const json = await res.json();
-
-        // if request error
-        if (!res.ok) {
-          if (res.status === 404) return message.reply(json.error);
-          throw new Error(json.error);
-        }
-        return json;
-      })
-      .catch(console.error);
-  },
-  async set(message, messageId) {
-    // get user message first
-    return message.channel.messages
-      .fetch({ around: messageId, limit: 1 })
-      .then((messages) => {
-        const actuality = messages.first().content;
-
-        // send selected message to the server
-        return fetch(`${serverAddress}/api/setActuality`, {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ actuality }),
-        })
-          .then(async (res) => {
-            const json = await res.json();
-            if (!res.ok) throw new Error(res.statusText);
-            return json;
-          });
-      })
-      .catch(console.error);
   },
 };

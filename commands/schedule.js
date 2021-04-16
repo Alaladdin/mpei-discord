@@ -1,6 +1,5 @@
-const fetch = require('node-fetch');
 const pdate = require('../utility/pdate');
-const { serverAddress } = require('../config');
+const pschedule = require('../functions/schedule');
 
 module.exports = {
   name: 'schedule',
@@ -44,23 +43,46 @@ module.exports = {
     }
 
     // return message
-    message.channel.send('Получаю данные с сервера')
+    message.channel.send('`Получаю данные с сервера...`')
       .then(async (sentMessage) => {
         const selectedDate = argsInstructions[!args.length ? 'empty' : command];
-        const { schedule } = await this.get(selectedDate) || {};
+        let { schedule } = await pschedule.get(selectedDate) || {};
+        const scheduleLength = schedule ? schedule.length : 0;
+        const scheduleIndexesToDelete = [];
 
         if (typeof schedule !== 'object' && !Array.isArray(schedule)) {
-          sentMessage.edit('Ошибка при попытке получить расписание');
+          sentMessage.edit('`Ошибка при попытке получить расписание`');
           return;
         }
 
         sentMessage.edit(`\`Расписание на ${selectedDate.name}\``);
 
-        // if schedule data exists
+        // if schedule data not exists
         if (Array.isArray(schedule) && schedule.length <= 0) {
           message.channel.send('Занятий нет 😎');
           return;
         }
+
+        // compare two nearest array elements
+        for (let i = 0; i <= scheduleLength - 2; i += 2) {
+          const c = schedule[i]; // current elements
+          const n = schedule[i + 1]; // next element
+          if (!n) break; // stop loop, if next element not exists
+
+          if (
+            (c.date === n.date)
+            && (c.discipline === n.discipline)
+            && (c.kindOfWork === n.kindOfWork)
+            && (c.lecturer === n.lecturer)
+          ) {
+            // combine two array elements
+            schedule[i].endLesson = n.endLesson;
+            scheduleIndexesToDelete.push(i + 1);
+          }
+        }
+
+        // filter array
+        schedule = this.filterArray(schedule, scheduleIndexesToDelete);
 
         schedule.forEach((item) => {
           const itemData = [];
@@ -85,24 +107,13 @@ module.exports = {
         });
       });
   },
-  async get({ start, finish }) {
-    const url = new URL(`${serverAddress}/api/getSchedule/`);
+  filterArray(arr = [], indexesArr = []) {
+    const newArr = [...arr];
 
-    if (start) url.searchParams.append('start', start);
-    if (finish) url.searchParams.append('finish', finish);
+    for (let i = indexesArr.length - 1; i >= 0; i--) {
+      newArr.splice(indexesArr[i], 1);
+    }
 
-    return fetch(url.href)
-      .then(async (res) => {
-        const json = await res.json();
-
-        // if request error
-        if (!res.ok) throw new Error(json.error);
-
-        return json;
-      })
-      .catch((err) => {
-        console.error(err);
-        return err.message;
-      });
+    return newArr;
   },
 };
