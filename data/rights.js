@@ -1,3 +1,5 @@
+const { isProd } = require('../config');
+
 const data = {
   admins: [
     {
@@ -25,7 +27,7 @@ module.exports = {
     return data.blacklist;
   },
   notify() {
-    const notifyTo = ['Aladdin', 'Drobot'];
+    const notifyTo = isProd ? ['Aladdin', 'Drobot'] : ['Aladdin'];
     return data.admins.filter((admin) => notifyTo.includes(admin.name));
   },
 };

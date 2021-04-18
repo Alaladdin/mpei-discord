@@ -20,7 +20,7 @@ module.exports = {
     },
   },
   async execute(message, args) {
-    const [command, messageId] = args;
+    const [command, messageId] = args.filter((item) => item);
 
     // if arguments not passed -> get actuality list
     if (!args.length) {

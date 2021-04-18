@@ -18,7 +18,7 @@ var writeToFile = function () {
     fs_1["default"].writeFile(storePath + "/localStore.json", data, function (err) {
         if (err) {
             console.log('There has been an error saving your configuration data.');
-            console.log(err.message);
+            console.error(err.message);
             return;
         }
         console.log('Configuration saved successfully.');

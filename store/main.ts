@@ -19,7 +19,7 @@ const writeToFile = () => {
   fs.writeFile(`${storePath}/localStore.json`, data, (err): void => {
     if (err) {
       console.log('There has been an error saving your configuration data.');
-      console.log(err.message);
+      console.error(err.message);
       return;
     }
     console.log('Configuration saved successfully.');

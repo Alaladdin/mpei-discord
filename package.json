@@ -1,7 +1,7 @@
 {
   "name": "mpei-discord",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "mpei bot for discord",
   "main": "index.js",
   "scripts": {
