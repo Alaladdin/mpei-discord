@@ -1,0 +1,11 @@
+---
+application:
+  name: "mpei-discord"
+  project: "mpei-discord"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-mpei-discord"
+  routes:
+  - application_name: "mpei-discord"
+    paths:
+    - "/*"
