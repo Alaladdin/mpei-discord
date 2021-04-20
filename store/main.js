@@ -3,35 +3,45 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.setters = exports.getters = exports.state = void 0;
-var fs_1 = __importDefault(require("fs"));
-var path_1 = __importDefault(require("path"));
+exports.eventEmitter = exports.setters = exports.getters = exports.state = void 0;
+var events_1 = __importDefault(require("events"));
+var writeStoreToFile_1 = __importDefault(require("./writeStoreToFile"));
 var localStore_json_1 = __importDefault(require("./localStore.json"));
-var root = path_1["default"].dirname(require.main.filename);
+events_1["default"].captureRejections = true;
+var eventEmitter = new events_1["default"].EventEmitter();
+exports.eventEmitter = eventEmitter;
 var state = {
     savedShortId: localStore_json_1["default"].savedShortId || '',
+    actualityChannel: localStore_json_1["default"].actualityChannel || '',
+    actualityTime: localStore_json_1["default"].actualityTime || '',
 };
 exports.state = state;
-var writeToFile = function () {
-    var data = JSON.stringify(state);
-    var storePath = path_1["default"].resolve(root, 'store');
-    fs_1["default"].writeFile(storePath + "/localStore.json", data, function (err) {
-        if (err) {
-            console.log('There has been an error saving your configuration data.');
-            console.error(err.message);
-            return;
-        }
-        console.log('Configuration saved successfully.');
-    });
-};
 var getters = {
     getSavedShortId: function () { return state.savedShortId; },
+    getActualityChannel: function () { return state.actualityChannel; },
+    getActualityTime: function () { return state.actualityTime; },
 };
 exports.getters = getters;
 var setters = {
+    listener: function (eventName) {
+        if (eventName === void 0) { eventName = ''; }
+        writeStoreToFile_1["default"](state)
+            .then(function () {
+            if (eventName)
+                eventEmitter.emit(eventName);
+        });
+    },
     setSavedShortId: function (newVal) {
         state.savedShortId = newVal;
-        writeToFile();
+        this.listener('savedShortId');
+    },
+    setActualityChannel: function (newVal) {
+        state.actualityChannel = newVal;
+        this.listener('actualityChannel');
+    },
+    setActualityTime: function (newVal) {
+        state.actualityTime = newVal;
+        this.listener('actualityTime');
     },
 };
 exports.setters = setters;

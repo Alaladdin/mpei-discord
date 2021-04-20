@@ -1,6 +1,7 @@
 const permissions = require('../utility/permissions');
 const pdate = require('../utility/pdate');
 const { random, accessError } = require('../data/phrases');
+const { getters: storeGetter, setters: storeSetter } = require('../store/index');
 const { get: getActuality, set: setActuality } = require('../functions/actuality');
 
 module.exports = {
@@ -13,14 +14,19 @@ module.exports = {
       description: 'обновляет данные актуалочки',
       permissions: ['ADMINISTRATOR'],
     },
-    watch: {
-      name: 'watch',
-      description: 'следит за изменениями актуалочки и обновляет данные сам',
+    au: {
+      name: 'au',
+      description: 'обновляет настройки автопостинга',
       permissions: ['ADMINISTRATOR'],
     },
+    // watch: {
+    //   name: 'watch',
+    //   description: 'следит за изменениями актуалочки и обновляет данные сам',
+    //   permissions: ['ADMINISTRATOR'],
+    // },
   },
   async execute(message, args) {
-    const [command, messageId] = args.filter((item) => item);
+    const [command, arg1, arg2] = args.filter((item) => item);
 
     // if arguments not passed -> get actuality list
     if (!args.length) {
@@ -45,19 +51,13 @@ module.exports = {
     }
 
     // actuality commands set up
-    if (command !== 'set') {
+    if (!['set', 'au'].includes(command)) {
       message.reply(`не знаю, что за аргумент такой \`${command}\``);
       return;
     }
 
-    // Если id не передано
-    if (!messageId || (messageId && messageId.length <= 0)) {
-      message.reply('Необходимо указать `id` сообщения');
-      return;
-    }
-
     // check user permission to this command
-    const hasPermission = permissions.check(message, this.arguments.set.permissions);
+    const hasPermission = permissions.check(message, this.arguments[command].permissions);
 
     // if no permission -> break
     if (!hasPermission) {
@@ -65,14 +65,81 @@ module.exports = {
       return;
     }
 
-    // else -> set new actuality
-    await setActuality(message, messageId)
-      .then(({ actuality } = {}) => {
-        if (actuality && 'content' in actuality) {
-          message.reply('актуалочка успешно обновлена 🔥');
-        } else {
-          message.reply('не удалось обновить актуалочку 😔');
+    // autopost
+    if (command === 'au') {
+      const currChannelId = storeGetter.getActualityChannel();
+      const currChannel = await message.guild.channels.cache.get(currChannelId);
+
+      // for example: arg1 = 'channel', arg2 = 'channelId'
+      if (!arg1 && !arg2) {
+        const msg = [];
+        msg.push('**Текущие настройки автопостинга**\n');
+        msg.push(`**Канал:** ${(currChannel && currChannel.toString()) || 'не установлен'}`);
+        msg.push(`**Время:** \`${storeGetter.getActualityTime() || '* * * * * *'}\``);
+        message.channel.send(msg, { split: true });
+        return;
+      }
+
+      // if unknown arguments were passed
+      if (!['channel', 'time'].includes(arg1)) {
+        message.reply(`не знаю, что за аргумент такой \`${arg1}\``);
+        return;
+      }
+
+      // if arguments were passed, but arg2 is empty
+      if (['channel', 'time'].includes(arg1) && !arg2) {
+        message.reply(`необходимо указать \`${arg1 === 'channel' ? 'id канала' : 'время отправки'}\``);
+        return;
+      }
+
+      // if channel
+      if (arg1 === 'channel') {
+        const newChannel = await message.guild.channels.cache.get(arg2);
+
+        if (!newChannel) {
+          message.reply('канал с таким `id` не найден');
+          return;
         }
-      });
+
+        message.reply(`канал для автопостинга актуалочки обновлен${currChannelId ? ` с ${currChannel.toString()}` : ''} на ${newChannel.toString()}`);
+        storeSetter.setActualityChannel(arg2);
+        return;
+      }
+
+      // if time
+      if (arg1 === 'time') {
+        const currTime = storeGetter.getActualityTime();
+        const symbolsValidation = (arr) => arr.join(' ')
+          .replaceAll(/[^0-9|?* ]/gm, '')
+          .split(' ')
+          .filter((item) => item)
+          .join(' ');
+
+        const newTime = symbolsValidation(args.splice(2));
+
+        message.reply(`время автопостинга актуалочки обновлено ${currTime ? `с \`${currTime}\`` : ''} на \`${newTime}\``);
+        storeSetter.setActualityTime(newTime);
+        return;
+      }
+    }
+
+    // set actuality
+    if (command === 'set') {
+      // Если id не передано
+      if (!arg1 || (arg1 && arg1.length <= 0)) {
+        message.reply('Необходимо указать `id` сообщения');
+        return;
+      }
+
+      // else -> set new actuality
+      await setActuality(message, arg1)
+        .then(({ actuality } = {}) => {
+          if (actuality && 'content' in actuality) {
+            message.reply('актуалочка успешно обновлена 🔥');
+          } else {
+            message.reply('не удалось обновить актуалочку 😔');
+          }
+        });
+    }
   },
 };

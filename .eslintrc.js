@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
+    'regex',
   ],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
