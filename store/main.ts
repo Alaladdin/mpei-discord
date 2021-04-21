@@ -1,6 +1,8 @@
 import events from 'events';
-import writeStoreToFile from './writeStoreToFile';
-import localStore from './localStore.json';
+import writeLocalStore from './writeLocalStore';
+import readLocalStore from './readLocalStore';
+
+const localStore = readLocalStore();
 
 events.captureRejections = true;
 const eventEmitter = new events.EventEmitter();
@@ -25,7 +27,7 @@ const getters = {
 
 const setters = {
   listener(eventName: string = ''): void {
-    writeStoreToFile(state)
+    writeLocalStore(state)
       .then(() => {
         if (eventName) eventEmitter.emit(eventName);
       });

@@ -2,11 +2,9 @@ import path from 'path';
 import fs from 'fs';
 
 export default (writeData: object): Promise<string> => {
-  const root: string = path.dirname(require.main.filename);
   const data: string = JSON.stringify(writeData);
-  const storePath: string = path.resolve(root, 'store');
 
-  return fs.promises.writeFile(`${storePath}/localStore.json`, data)
+  return fs.promises.writeFile(`${path.join(__dirname, 'localStore.json')}`, data, 'utf-8')
     .then((res) => {
       console.info('[LOCAL STORE] Configuration saved successfully.');
       return res;
