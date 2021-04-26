@@ -15,21 +15,20 @@ module.exports = {
       permissions: ['ADMINISTRATOR'],
     },
     au: {
-      name: 'au',
+      name: 'autoposting',
       description: 'обновляет настройки автопостинга',
       permissions: ['ADMINISTRATOR'],
     },
-    // watch: {
-    //   name: 'watch',
-    //   description: 'следит за изменениями актуалочки и обновляет данные сам',
-    //   permissions: ['ADMINISTRATOR'],
-    // },
+    lazy: {
+      name: 'lazy',
+      description: 'получает "несрочную" актуалочку',
+    },
   },
   async execute(message, args) {
     const [command, arg1, arg2] = args.filter((item) => item);
 
     // if arguments not passed -> get actuality list
-    if (!args.length) {
+    if (!args.length || command === 'lazy') {
       message.channel.send('`Получаю данные с сервера...`')
         .then(async (sentMessage) => {
           const { actuality } = await getActuality() || {};
@@ -37,8 +36,15 @@ module.exports = {
 
           if (actuality && 'content' in actuality) {
             msg.push('```');
-            msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
-            msg.push(actuality.content);
+
+            if (command === 'lazy') {
+              msg.push('Несрочная актуалити\n');
+              msg.push(actuality.lazyContent);
+            } else {
+              msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
+              msg.push(actuality.content);
+            }
+
             msg.push('```');
           } else {
             msg.push('Непредвиденская ошибка сервера 😔');
@@ -51,7 +57,7 @@ module.exports = {
     }
 
     // actuality commands set up
-    if (!['set', 'au'].includes(command)) {
+    if (!Object.keys(this.arguments).includes(command)) {
       message.reply(`не знаю, что за аргумент такой \`${command}\``);
       return;
     }
@@ -131,14 +137,16 @@ module.exports = {
         return;
       }
 
+      const contentType = arg1.toLowerCase() === 'lazy' ? 'lazyContent' : 'content';
+      const isContent = contentType === 'content';
+      const messageId = isContent ? arg1 : arg2;
+
       // else -> set new actuality
-      await setActuality(message, arg1)
-        .then(({ actuality } = {}) => {
-          if (actuality && 'content' in actuality) {
-            message.reply('актуалочка успешно обновлена 🔥');
-          } else {
-            message.reply('не удалось обновить актуалочку 😔');
-          }
+      await setActuality(message, messageId, contentType)
+        .then(() => message.reply(`${!isContent ? 'несрочная ' : ''}актуалочка успешно обновлена 🔥`))
+        .catch((err) => {
+          console.error(err);
+          message.reply('не удалось обновить актуалочку 😔');
         });
     }
   },

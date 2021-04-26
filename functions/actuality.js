@@ -19,25 +19,28 @@ module.exports = {
       })
       .catch(console.error);
   },
-  async set(message, messageId) {
-    // get user message first
+  async set(message, messageId, contentType = 'content') {
+    // get user message
     return message.channel.messages
       .fetch({ around: messageId, limit: 1 })
       .then((messages) => {
-        const actuality = messages.first().content;
+        const actualityContent = messages.first().content;
 
         // send selected message to the server
         return fetch(`${serverAddress}/api/setActuality`, {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ actuality }),
+          body: JSON.stringify({
+            actuality: {
+              [contentType]: actualityContent,
+            },
+          }),
         })
           .then(async (res) => {
             const json = await res.json();
             if (!res.ok) throw new Error(res.statusText);
             return json;
           });
-      })
-      .catch(console.error);
+      });
   },
 };
