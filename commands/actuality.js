@@ -38,7 +38,7 @@ module.exports = {
             msg.push('```');
 
             if (command === 'lazy') {
-              msg.push('Несрочная актуалити\n');
+              msg.push('Несрочное актуалити\n');
               msg.push(actuality.lazyContent);
             } else {
               msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
