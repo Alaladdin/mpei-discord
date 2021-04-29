@@ -5,7 +5,7 @@ module.exports = {
   name: 'actuality',
   async get() {
     // get actuality data
-    return fetch(`${serverAddress}/api/getActuality`)
+    return fetch(`${serverAddress}/getActuality`)
       .then(async (res) => {
         const json = await res.json();
 
@@ -27,7 +27,7 @@ module.exports = {
         const actualityContent = messages.first().content;
 
         // send selected message to the server
-        return fetch(`${serverAddress}/api/setActuality`, {
+        return fetch(`${serverAddress}/setActuality`, {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

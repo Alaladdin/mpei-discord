@@ -6,7 +6,7 @@ module.exports = {
   isProd,
   prefix: '!',
   token: process.env.token,
-  serverAddress: isProd ? process.env.prodServerAddress : process.env.devServerAddress,
+  serverAddress: isProd ? process.env.PROD_SERVER : process.env.DEV_SERVER,
   channelIds: {
     actuality: isProd ? '832343311368192081' : '822176467978158100',
     dev: '822176467978158100',
