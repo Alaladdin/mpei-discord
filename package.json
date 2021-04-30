@@ -1,12 +1,14 @@
 {
   "name": "mpei-discord",
   "private": true,
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "mpei bot for discord",
   "main": "index.js",
   "scripts": {
     "start": "node ./index.js",
-    "dev": "nodemon ./index.js"
+    "dev": "nodemon ./index.js",
+    "deploy:setup": "pm2 deploy production setup",
+    "deploy:prod": "pm2 deploy ecosystem.config.js production --force"
   },
   "keywords": [
     "mpei",
