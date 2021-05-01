@@ -6,7 +6,7 @@ module.exports = {
       name: 'mdis',
       script: 'index.js',
       watch: true,
-      ignore_watch: ['node_modules'],
+      ignore_watch: ['node_modules', 'store/localStore.json'],
       env: {
         NODE_ENV: 'development',
       },
