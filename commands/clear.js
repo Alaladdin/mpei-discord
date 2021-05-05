@@ -1,4 +1,4 @@
-const permissions = require('../utility/permissions');
+const permissions = require('../util/permissions');
 const { random, accessError } = require('../data/phrases');
 
 module.exports = {

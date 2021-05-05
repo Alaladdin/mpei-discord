@@ -1,4 +1,4 @@
-const pdate = require('../utility/pdate');
+const pdate = require('../util/pdate');
 const pschedule = require('../functions/schedule');
 
 module.exports = {

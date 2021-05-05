@@ -1,4 +1,4 @@
-const random = require('../utility/random');
+const random = require('../util/random');
 const trollings = require('../data/trollings');
 
 module.exports = {

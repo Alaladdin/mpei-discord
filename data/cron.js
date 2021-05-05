@@ -1,5 +1,5 @@
 const schedule = require('node-schedule');
-const pdate = require('../utility/pdate');
+const pdate = require('../util/pdate');
 const pactuality = require('../functions/actuality');
 const sendMessageToUsers = require('../functions/sendMessageToUsers');
 const { notify } = require('./rights');

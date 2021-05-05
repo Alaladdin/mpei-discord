@@ -1,5 +1,5 @@
-const permissions = require('../utility/permissions');
-const pdate = require('../utility/pdate');
+const permissions = require('../util/permissions');
+const pdate = require('../util/pdate');
 const { random, accessError } = require('../data/phrases');
 const { getters: storeGetter, setters: storeSetter } = require('../store/index');
 const { get: getActuality, set: setActuality } = require('../functions/actuality');
