@@ -14,7 +14,7 @@ exports.eventEmitter = eventEmitter;
 var state = {
     savedShortId: localStore.savedShortId || '',
     actualityChannel: localStore.actualityChannel || '',
-    actualityTime: localStore.actualityTime || '',
+    actualityTime: localStore.actualityTime || '0 0 22 * * *',
 };
 exports.state = state;
 var getters = {
@@ -27,10 +27,7 @@ var setters = {
     listener: function (eventName) {
         if (eventName === void 0) { eventName = ''; }
         writeLocalStore_1["default"](state)
-            .then(function () {
-            if (eventName)
-                eventEmitter.emit(eventName);
-        });
+            .then(function () { return eventName && eventEmitter.emit(eventName); });
     },
     setSavedShortId: function (newVal) {
         state.savedShortId = newVal;

@@ -16,7 +16,7 @@ interface IState {
 const state: IState = {
   savedShortId: localStore.savedShortId || '',
   actualityChannel: localStore.actualityChannel || '',
-  actualityTime: localStore.actualityTime || '',
+  actualityTime: localStore.actualityTime || '0 0 22 * * *',
 };
 
 const getters = {
@@ -28,9 +28,7 @@ const getters = {
 const setters = {
   listener(eventName: string = ''): void {
     writeLocalStore(state)
-      .then(() => {
-        if (eventName) eventEmitter.emit(eventName);
-      });
+      .then(() => eventName && eventEmitter.emit(eventName));
   },
   setSavedShortId(newVal: string): void {
     state.savedShortId = newVal;

@@ -15,13 +15,13 @@ module.exports = {
     const { commands } = message.client;
 
     if (!args.length) {
-      const userAllowedCommands = commands.filter((c) => {
+      const userAllowedCommands = commands.filter((command) => {
         if (message.guild) {
           const member = message.guild.member(message.author);
-          return member.permissions.has(c.permissions);
+          return member.permissions.has(command.permissions);
         }
 
-        return !c.permissions;
+        return !command.permissions;
       });
 
       data.push('Список моих командуcов:');

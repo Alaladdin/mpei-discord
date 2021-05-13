@@ -18,9 +18,10 @@ module.exports = {
     const channelIdToPost = () => storeGetter.getActualityChannel();
     const timeToPost = () => storeGetter.getActualityTime();
 
-    if (!channelIdToPost() || !timeToPost()) return;
-    // actuality every day at 22:00:00
+    // actuality schedule
     const actualityJob = schedule.scheduleJob(timeToPost(), async () => {
+      if (!channelIdToPost()) return;
+
       const { actuality } = await pactuality.get() || {};
 
       if (!(actuality && 'content' in actuality)) {
