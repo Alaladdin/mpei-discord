@@ -114,7 +114,7 @@ module.exports = {
             message.reply(`канал для автопостинга актуалочки изменен${currChannelId ? ` с ${currChannel.toString()}` : ''} на ${newChannel.toString()}`);
           })
           .catch((err) => {
-            message.reply(`ошибка при попытке изменить канал для автопостинга актуалочки в базе данных\n\n\`${err}\``);
+            message.reply(`ошибка при попытке изменить канал для автопостинга актуалочки в базе данных\n\n\`${err.statusText}\``);
           });
         return;
       }
@@ -135,7 +135,7 @@ module.exports = {
             message.reply(`время автопостинга актуалочки изменено ${currTime ? `с \`${currTime}\`` : ''} на \`${newTime}\``);
           })
           .catch((err) => {
-            message.reply(`ошибка при попытке изменить время автопостинга актуалочки в базе данных\n\n\`${err}\``);
+            message.reply(`ошибка при попытке изменить время автопостинга актуалочки в базе данных\n\n\`${err.statusText}\``);
           });
         return;
       }
