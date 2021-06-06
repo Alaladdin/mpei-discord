@@ -1,5 +1,6 @@
 const schedule = require('node-schedule');
-const pdate = require('../util/pdate');
+const moment = require('moment');
+const { defaultDateFormat } = require('../config');
 const pactuality = require('../functions/actuality');
 const sendMessageToUsers = require('../functions/sendMessageToUsers');
 const { notify } = require('./rights');
@@ -46,7 +47,7 @@ module.exports = {
         ? await channel.messages.fetch({ limit: channelMessages.size - 1 }) : 0;
 
       msg.push('```');
-      msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
+      msg.push(`Актуалити. Обновлено: ${moment(actuality.date).format(defaultDateFormat)}\n`);
       msg.push(`${actuality.content}`);
       msg.push('```');
 

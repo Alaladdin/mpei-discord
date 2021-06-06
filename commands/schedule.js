@@ -1,4 +1,5 @@
-const pdate = require('../util/pdate');
+const moment = require('moment');
+const { defaultDateFormat, serverDateFormat } = require('../config');
 const pschedule = require('../functions/schedule');
 
 module.exports = {
@@ -15,20 +16,37 @@ module.exports = {
       name: 'week',
       description: 'расписание на неделю',
     },
+    {
+      name: 'nextWeek',
+      description: 'расписание следующую неделю',
+    },
+    {
+      name: 'month',
+      description: 'расписание месяц',
+    },
   ],
   async execute(message, args) {
-    const today = pdate.format(new Date().toString());
-    const tomorrow = pdate.format(new Date().setDate(new Date().getDate() + 1));
+    const today = moment().format(serverDateFormat);
+    const tomorrow = moment().add(1, 'days').format(serverDateFormat);
     const [command] = args;
-
     const argsInstructions = {
-      week: {
-        name: 'неделю',
-      },
       tw: {
         name: 'завтра',
         start: tomorrow,
         finish: tomorrow,
+      },
+      week: {
+        name: 'неделю',
+      },
+      nextWeek: {
+        name: 'следующую неделю',
+        start: moment().add(1, 'weeks').startOf('isoWeek').format(serverDateFormat),
+        finish: moment().add(1, 'weeks').endOf('isoWeek').format(serverDateFormat),
+      },
+      month: {
+        name: 'месяц',
+        start: today,
+        finish: moment().add(1, 'month').format(serverDateFormat),
       },
       empty: {
         name: 'сегодня',
@@ -74,7 +92,8 @@ module.exports = {
           } = item;
 
           itemData.push('```');
-          itemData.push(`[${dayOfWeekString}] ${discipline} - ${pdate.format(date, 'ru-RU')}`);
+          itemData.push(`[${dayOfWeekString}] ${discipline} - ${moment(new Date(date))
+            .format(defaultDateFormat)}`);
           itemData.push(kindOfWork);
           itemData.push(`${beginLesson} - ${endLesson}`);
           itemData.push(lecturer);

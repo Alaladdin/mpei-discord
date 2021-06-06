@@ -1,5 +1,6 @@
+const moment = require('moment');
+const { defaultDateFormat } = require('../config');
 const permissions = require('../util/permissions');
-const pdate = require('../util/pdate');
 const { random, accessError } = require('../data/phrases');
 const { getters: storeGetter, setters: storeSetter } = require('../store/index');
 const { get: getActuality, set: setActuality } = require('../functions/actuality');
@@ -41,7 +42,8 @@ module.exports = {
               msg.push('Несрочное актуалити\n');
               msg.push(actuality.lazyContent);
             } else {
-              msg.push(`Актуалити. Обновлено: ${pdate.format(actuality.date, 'ru-RU')}\n`);
+              msg.push(`Актуалити. Обновлено: ${moment(actuality.date)
+                .format(defaultDateFormat)}\n`);
               msg.push(actuality.content);
             }
 
@@ -82,7 +84,7 @@ module.exports = {
         msg.push('**Текущие настройки автопостинга**\n');
         msg.push(`**Канал:** ${(currChannel && currChannel.toString()) || 'не установлен'}`);
         msg.push(`**Время:** \`${storeGetter.getActualityTime() || '* * * * * *'}\``);
-        message.channel.send(msg, { split: true });
+        await message.channel.send(msg, { split: true });
         return;
       }
 
@@ -107,8 +109,13 @@ module.exports = {
           return;
         }
 
-        message.reply(`канал для автопостинга актуалочки обновлен${currChannelId ? ` с ${currChannel.toString()}` : ''} на ${newChannel.toString()}`);
-        storeSetter.setActualityChannel(arg2);
+        await storeSetter.setActualityChannel(arg2)
+          .then(() => {
+            message.reply(`канал для автопостинга актуалочки изменен${currChannelId ? ` с ${currChannel.toString()}` : ''} на ${newChannel.toString()}`);
+          })
+          .catch((err) => {
+            message.reply(`ошибка при попытке изменить канал для автопостинга актуалочки в базе данных\n\n\`${err}\``);
+          });
         return;
       }
 
@@ -123,8 +130,13 @@ module.exports = {
 
         const newTime = symbolsValidation(args.splice(2));
 
-        message.reply(`время автопостинга актуалочки обновлено ${currTime ? `с \`${currTime}\`` : ''} на \`${newTime}\``);
-        storeSetter.setActualityTime(newTime);
+        await storeSetter.setActualityTime(newTime)
+          .then(() => {
+            message.reply(`время автопостинга актуалочки изменено ${currTime ? `с \`${currTime}\`` : ''} на \`${newTime}\``);
+          })
+          .catch((err) => {
+            message.reply(`ошибка при попытке изменить время автопостинга актуалочки в базе данных\n\n\`${err}\``);
+          });
         return;
       }
     }

@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const { version } = require('../package.json');
 const { serverAddress, prefix, isProd } = require('../config');
+const { getUniversalUrl } = require('../data/requests');
 
 module.exports = {
   name: 'status',
@@ -8,7 +9,7 @@ module.exports = {
   aliases: ['info', 'i'],
   async execute(message) {
     const msg = [];
-    const serverData = (query) => fetch(`${serverAddress}/${query}`)
+    const serverData = (query) => fetch(getUniversalUrl(query))
       .then(async (res) => {
         const json = await res.json();
         if (!res.ok) throw new Error(res.statusText);

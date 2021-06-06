@@ -1,11 +1,11 @@
 const fetch = require('node-fetch');
-const { serverAddress } = require('../config');
+const { getActualityUrl, setActualityUrl } = require('../data/requests');
 
 module.exports = {
   name: 'actuality',
   async get() {
     // get actuality data
-    return fetch(`${serverAddress}/getActuality`)
+    return fetch(getActualityUrl)
       .then(async (res) => {
         const json = await res.json();
 
@@ -27,7 +27,7 @@ module.exports = {
         const actualityContent = messages.first().content;
 
         // send selected message to the server
-        return fetch(`${serverAddress}/setActuality`, {
+        return fetch(setActualityUrl, {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

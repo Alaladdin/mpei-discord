@@ -9,6 +9,6 @@ module.exports = {
       activity: isProd ? activities.default : activities.developing,
       status: 'dnd',
     });
-    console.log(`Logged in as ${client.user.tag}`);
+    console.info(`Logged in as ${client.user.tag}`);
   },
 };
