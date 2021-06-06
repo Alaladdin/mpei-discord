@@ -1,5 +1,5 @@
 const events = require('events');
-const { getConfig, setConfig } = require('../functions/storeConfigMethods');
+const { getStore, setStore } = require('../functions/storeMethods');
 
 events.captureRejections = true;
 
@@ -7,12 +7,12 @@ const eventEmitter = new events.EventEmitter();
 let state = {};
 
 (async () => {
-  const remoteConfig = await getConfig().catch(() => ({}));
+  const remoteStore = await getStore().catch(() => ({}));
 
   state = {
-    savedShortId: remoteConfig.savedShortId || '',
-    actualityChannel: remoteConfig.actualityChannel || '',
-    actualityTime: remoteConfig.actualityTime || '0 0 22 * * *',
+    savedShortId: remoteStore.savedShortId || '',
+    actualityChannel: remoteStore.actualityChannel || '',
+    actualityTime: remoteStore.actualityTime || '0 0 22 * * *',
   };
 })();
 
@@ -25,7 +25,7 @@ const getters = {
 const setters = {
   async listener(eventName) {
     // write config to the DB
-    return setConfig(state)
+    return setStore(state)
       .then((updatedState) => {
         eventEmitter.emit(eventName);
         return updatedState;

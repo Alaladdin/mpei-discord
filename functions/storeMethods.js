@@ -1,33 +1,33 @@
 const fetch = require('node-fetch');
-const { getConfigUrl, setConfigUrl } = require('../data/requests');
+const { getStoreUrl, setStoreUrl } = require('../data/requests');
 
-const getConfig = () => fetch(getConfigUrl)
+const getStore = () => fetch(getStoreUrl)
   .then(async (res) => {
     const json = await res.json();
 
     if (!res.ok) throw new Error(res.statusText);
 
-    return json.config;
+    return json.store;
   })
   .catch((err) => {
     console.error(err);
     return err;
   });
 
-const setConfig = async (config) => fetch(setConfigUrl, {
+const setStore = async (store) => fetch(setStoreUrl, {
   method: 'post',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ config }),
+  body: JSON.stringify({ store }),
 })
   .then(async (res) => {
     const json = await res.json();
 
     if (!res.ok) throw new Error(res.statusText);
 
-    return json.config;
+    return json.store;
   });
 
 module.exports = {
-  getConfig,
-  setConfig,
+  getStore,
+  setStore,
 };
