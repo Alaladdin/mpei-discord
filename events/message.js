@@ -7,6 +7,7 @@ module.exports = {
     const blacklistedIds = blacklist().map((user) => user.id);
     if (
       !msg.content.startsWith(prefix)
+      || msg.content.length <= 1
       || msg.author.bot
       || blacklistedIds.includes(msg.author.id)
     ) {
