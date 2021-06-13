@@ -2,9 +2,9 @@ const fetch = require('node-fetch');
 const { getFAQUrl, setFAQUrl, removeFAQUrl } = require('../data/requests');
 
 module.exports = {
-  name: 'actuality',
+  name: 'FAQ',
   async get() {
-    // get actuality data
+    // get FAQ data
     return fetch(getFAQUrl)
       .then(async (res) => {
         const json = await res.json();

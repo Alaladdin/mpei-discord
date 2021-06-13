@@ -35,7 +35,7 @@ module.exports = {
               msg.push(item.question, `${item.answer}\n`);
             });
             msg.push('```');
-          } else if (!faq.length) {
+          } else if (faq && !faq.length) {
             msg.push('FAQ пустой 😔');
           } else {
             msg.push('Непредвиденская ошибка сервера 😔');
