@@ -26,7 +26,7 @@ module.exports = {
     },
   },
   async execute(message, args) {
-    const [command, arg1, arg2] = args.filter((item) => item);
+    const [command, arg1, arg2] = args;
 
     // if arguments not passed -> get actuality list
     if (!args.length || command === 'lazy') {

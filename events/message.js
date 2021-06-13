@@ -9,10 +9,12 @@ module.exports = {
       !msg.content.startsWith(prefix)
       || msg.author.bot
       || blacklistedIds.includes(msg.author.id)
-    ) return;
+    ) {
+      return;
+    }
 
     const commandBody = msg.content.slice(prefix.length);
-    const args = commandBody.split(' ');
+    const args = commandBody.split(' ').filter((arg) => arg);
     const commandName = args.shift().toLowerCase();
 
     // get command by name or alias
