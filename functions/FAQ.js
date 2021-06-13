@@ -10,10 +10,7 @@ module.exports = {
         const json = await res.json();
 
         // if request error
-        if (!res.ok) {
-          if (res.status === 404) throw new Error(json.error);
-          throw new Error(json.error);
-        }
+        if (!res.ok) throw new Error(json.error);
 
         return json;
       })
