@@ -32,7 +32,7 @@ module.exports = {
 
         // send selected message to the server
         return fetch(setFAQUrl, {
-          method: 'delete',
+          method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ faq: FAQObj }),
         })
@@ -43,9 +43,9 @@ module.exports = {
           });
       });
   },
-  async remove(question) {
+  async delete(question) {
     return fetch(removeFAQUrl, {
-      method: 'post',
+      method: 'delete',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question }),
     })

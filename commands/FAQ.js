@@ -1,6 +1,6 @@
 const permissions = require('../util/permissions');
 const { random, accessError } = require('../data/phrases');
-const { get: getFAQ, set: setFAQ, remove: removeFAQ } = require('../functions/FAQ');
+const { get: getFAQ, set: setFAQ, delete: deleteFAQ } = require('../functions/FAQ');
 
 module.exports = {
   name: 'faq',
@@ -86,7 +86,7 @@ module.exports = {
         return;
       }
 
-      await removeFAQ(question)
+      await deleteFAQ(question)
         .then(() => message.reply('вопрос успешно удален из FAQ 🔥'))
         .catch((err) => {
           console.error(err);
