@@ -7,8 +7,8 @@ module.exports = {
   description: 'Выводит FAQ',
   aliases: ['f', 'qa'],
   arguments: {
-    set: {
-      name: 'set',
+    add: {
+      name: 'add',
       description: 'обновляет FAQ',
       permissions: ['ADMINISTRATOR'],
     },
@@ -61,8 +61,8 @@ module.exports = {
       return;
     }
 
-    // set FAQ
-    if (command === 'set') {
+    // add question to FAQ
+    if (command === 'add') {
       // Если id не передано
       if (!arg1 || (arg1 && arg1.length <= 0)) {
         message.reply('Необходимо указать `id` сообщения');
@@ -71,7 +71,7 @@ module.exports = {
 
       // else -> set new actuality
       await setFAQ(message, arg1)
-        .then(() => message.reply('FAQ успешно обновлен 🔥'))
+        .then(() => message.reply('Вопрос успешно обновлен 🔥'))
         .catch((err) => {
           console.error(err);
           message.reply('не удалось обновить FAQ 😔');
@@ -86,7 +86,6 @@ module.exports = {
         return;
       }
 
-      // else -> set new actuality
       await removeFAQ(question)
         .then(() => message.reply('вопрос успешно удален из FAQ 🔥'))
         .catch((err) => {

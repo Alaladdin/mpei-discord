@@ -32,7 +32,7 @@ module.exports = {
 
         // send selected message to the server
         return fetch(setFAQUrl, {
-          method: 'post',
+          method: 'delete',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ faq: FAQObj }),
         })
