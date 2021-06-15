@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { getFAQUrl, setFAQUrl, removeFAQUrl } = require('../data/requests');
+const { getFAQUrl, addFAQUrl, removeFAQUrl } = require('../data/requests');
 
 module.exports = {
   name: 'FAQ',
@@ -9,14 +9,14 @@ module.exports = {
       .then(async (res) => {
         const json = await res.json();
 
-        // if request error
-        if (!res.ok) throw new Error(json.error);
+        if ([400, 403, 404].includes(res.status)) throw new Error(json.message);
+        if (!res.ok) throw new Error(res.statusText);
 
         return json;
       })
       .catch(console.error);
   },
-  async set(message, messageId) {
+  async add(message, messageId) {
     // get user message
     return message.channel.messages
       .fetch({ around: messageId, limit: 1 })
@@ -31,14 +31,17 @@ module.exports = {
         };
 
         // send selected message to the server
-        return fetch(setFAQUrl, {
+        return fetch(addFAQUrl, {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ faq: FAQObj }),
         })
           .then(async (res) => {
             const json = await res.json();
+
+            if ([400, 403, 404].includes(res.status)) throw new Error(json.message);
             if (!res.ok) throw new Error(res.statusText);
+
             return json;
           });
       });
@@ -51,7 +54,10 @@ module.exports = {
     })
       .then(async (res) => {
         const json = await res.json();
+
+        if ([400, 403, 404].includes(res.status)) throw new Error(json.message);
         if (!res.ok) throw new Error(res.statusText);
+
         return json;
       });
   },

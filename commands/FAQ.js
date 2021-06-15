@@ -1,6 +1,6 @@
 const permissions = require('../util/permissions');
 const { random, accessError } = require('../data/phrases');
-const { get: getFAQ, set: setFAQ, delete: deleteFAQ } = require('../functions/FAQ');
+const { get: getFAQ, add: addFAQ, delete: deleteFAQ } = require('../functions/FAQ');
 
 module.exports = {
   name: 'faq',
@@ -70,11 +70,12 @@ module.exports = {
       }
 
       // else -> set new actuality
-      await setFAQ(message, arg1)
-        .then(() => message.reply('Вопрос успешно обновлен 🔥'))
+      await addFAQ(message, arg1)
+        .then(() => message.reply('вопрос успешно добавлен 🔥'))
         .catch((err) => {
           console.error(err);
-          message.reply('не удалось обновить FAQ 😔');
+          const errorText = err.code === 'ECONNREFUSED' ? 'Error: connection error' : err.message;
+          message.reply(`не удалось добавить вопрос в FAQ 😔 \n\`${errorText || ''}\``);
         });
     }
     if (command === 'rm') {
@@ -90,7 +91,8 @@ module.exports = {
         .then(() => message.reply('вопрос успешно удален из FAQ 🔥'))
         .catch((err) => {
           console.error(err);
-          message.reply('не удалось удалить вопрос 😔');
+          const errorText = err.code === 'ECONNREFUSED' ? 'Error: connection error' : err.message;
+          message.reply(`не удалось удалить вопрос 😔 \n\`${errorText || ''}\``);
         });
     }
   },

@@ -8,6 +8,6 @@ module.exports = {
   setActualityUrl: `${serverAddress}/setActuality?authToken=${authToken}`,
   getScheduleUrl: `${serverAddress}/getSchedule/`,
   getFAQUrl: `${serverAddress}/getFAQ?authToken=${authToken}`,
-  setFAQUrl: `${serverAddress}/addFAQ?authToken=${authToken}`,
+  addFAQUrl: `${serverAddress}/addFAQ?authToken=${authToken}`,
   removeFAQUrl: `${serverAddress}/deleteFAQ?authToken=${authToken}`,
 };
