@@ -5,12 +5,10 @@ module.exports = {
   name       : 'troll',
   description: 'Троллит, притом жесска',
   aliases    : ['t'],
-  arguments  : [
-    {
-      name       : '[name]',
-      description: 'кого троллить',
-    },
-  ],
+  arguments  : [{
+    name       : '[name]',
+    description: 'кого троллить',
+  }],
   async execute(message, args) {
     if (!args.length) return message.reply('Кого троллить?');
 

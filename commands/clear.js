@@ -3,7 +3,7 @@ const { accessError } = require('../data/phrases');
 
 module.exports = {
   name       : 'clear',
-  description: 'Удаляет указанное количество сообщений [2-99])',
+  description: 'Удаляет указанное количество сообщений [2-99]',
   permissions: ['ADMINISTRATOR'],
   async execute(message, args) {
     if (!message.guild) return message.channel.send('Команда не для личных сообщений');
