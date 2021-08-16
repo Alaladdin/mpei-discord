@@ -1,21 +1,40 @@
 const schedule = require('node-schedule');
-const moment = require('moment');
-const { defaultDateFormat } = require('../config');
-const pactuality = require('../functions/actuality');
-const sendMessageToUsers = require('../functions/sendMessageToUsers');
-const { notify } = require('./rights');
-const {
-  getters: storeGetter,
-  setters: storeSetter,
-  eventEmitter,
-} = require('../store/index');
+const { getters: storeGetter, setters: storeSetter, eventEmitter } = require('../store/index');
+const { get: getActuality } = require('../functions/actuality');
+const { sendMessageToUsers, getRandomArrayItem } = require('../helpers');
+const { admins } = require('./rights');
+const colors = require('./colors');
 
 module.exports = {
-  name: 'crons',
+  name       : 'cron',
   description: 'sets cron',
-  async init(client) {
-    const notifyTo = notify();
+  async sendActualities(actuality, channel) {
+    const actualities = [
+      {
+        title  : 'Несрочное актуалити',
+        content: actuality.lazyContent,
+      },
+      {
+        title  : 'Актуалити',
+        content: actuality.content,
+      },
+    ].filter((a) => a.content);
 
+    actualities.forEach((a) => {
+      const actualityEmbed = {
+        color : getRandomArrayItem(colors),
+        author: {
+          name    : a.title,
+          icon_url: 'https://woka.site/LRS7Mvd10',
+        },
+        description: a.content,
+        timestamp  : actuality.date,
+      };
+
+      return channel.send({ embeds: [actualityEmbed] });
+    });
+  },
+  async init(client) {
     const channelIdToPost = () => storeGetter.getActualityChannel();
     const timeToPost = () => storeGetter.getActualityTime();
 
@@ -23,52 +42,24 @@ module.exports = {
     const actualityJob = schedule.scheduleJob(timeToPost(), async () => {
       if (!channelIdToPost()) return;
 
-      const { actuality } = await pactuality.get() || {};
+      await getActuality()
+        .then(async (actuality) => {
+          if (actuality.shortId === storeGetter.getSavedShortId()) return;
 
-      if (!(actuality && 'content' in actuality)) {
-        sendMessageToUsers(notifyTo, 'Ошибка при получении актуалочки', client);
-        return;
-      }
+          const channel = await client.channels.fetch(channelIdToPost());
+          const channelMessages = await channel.messages.fetch({ limit: 100 });
+          await channel.bulkDelete(channelMessages, true);
 
-      if (actuality.shortId === storeGetter.getSavedShortId()) return;
-
-      const msg = [];
-      let channel;
-
-      try {
-        channel = await client.channels.fetch(channelIdToPost());
-      } catch {
-        sendMessageToUsers(notifyTo, 'Ошибка при получении канала для автопостинга актуалочки', client);
-        return;
-      }
-
-      const channelMessages = await channel.messages.fetch({ limit: 100 });
-      const messagesToDelete = (channelMessages.size > 1)
-        ? await channel.messages.fetch({ limit: channelMessages.size - 1 }) : 0;
-
-      msg.push('```');
-      msg.push(`Актуалити. Обновлено: ${moment(actuality.date).format(defaultDateFormat)}\n`);
-      msg.push(`${actuality.content}`);
-      msg.push('```');
-
-      try {
-        // delete, only if bigger, than one
-        if (messagesToDelete.size > 0) await channel.bulkDelete(messagesToDelete, true);
-      } catch (err) {
-        console.error(err);
-        sendMessageToUsers(notifyTo, 'Ошибка при удалении сообщений в канале актуалочки', client);
-      }
-
-      channel.send(msg, { split: true })
-        .then(() => storeSetter.setSavedShortId(actuality.shortId));
+          this.sendActualities(actuality, channel)
+            .then(() => storeSetter.setSavedShortId(actuality.shortId));
+        })
+        .catch(() => sendMessageToUsers(admins, 'Ошибка в автопостинге актуалочки', client));
     });
 
-    // onEventName reSchedule schedule
-    ['actualityChannel', 'actualityTime'].forEach((eventName) => {
-      eventEmitter.on(eventName, async () => {
-        console.info(`[${eventName}] change was detected`);
-        actualityJob.reschedule(timeToPost());
-      });
+    // onEventName reSchedule schedule job
+    eventEmitter.on('actualityTime', async () => {
+      console.info('[actualityTime] change was detected');
+      actualityJob.reschedule(timeToPost());
     });
   },
 };

@@ -1,20 +1,20 @@
-const rand = require('../util/random');
+const { getRandomArrayItem } = require('../helpers');
 
 module.exports = {
   default: {
     type: 'PLAYING',
-    name: [
+    name: getRandomArrayItem([
       'with your mom',
       'with your mamasitta',
       'with your momello',
       'with your mammy',
       'with your dad 😳',
-    ][rand.int(4)],
+    ]),
   },
-  watchingSteam: {
-    type: 'STREAMING', // WATCHING
+  steaming: {
+    type: 'STREAMING',
     name: 'lesson on youtube',
-    // url: 'https://www.youtube.com/channel/UCO5OTOVKPgFgb0BaqXes7Ag',
+    url : 'https://www.youtube.com/watch?v=5qap5aO4i9A',
   },
   developing: {
     type: 'LISTENING',

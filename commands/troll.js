@@ -1,20 +1,22 @@
-const random = require('../util/random');
-const trollings = require('../data/trollings');
+const { getRandomArrayItem } = require('../helpers');
+const { trollings } = require('../data/phrases');
 
 module.exports = {
-  name: 'troll',
+  name       : 'troll',
   description: 'Троллит, притом жесска',
-  aliases: ['t'],
-  usage: '[name]',
-  arguments: [
+  aliases    : ['t'],
+  arguments  : [
     {
-      name: '[name]',
+      name       : '[name]',
       description: 'кого троллить',
     },
   ],
   async execute(message, args) {
-    const personToTroll = args[0];
-    if (!personToTroll || personToTroll.length <= 0) return message.reply('Кого троллить то?');
-    return message.channel.send(`${personToTroll} ${trollings[random.int(trollings.length)]}`);
+    if (!args.length) return message.reply('Кого троллить?');
+
+    const name = args.join(' ');
+    const trolling = getRandomArrayItem(trollings);
+
+    return message.channel.send(trolling.replace('{name}', name));
   },
 };

@@ -5,7 +5,7 @@ const getStore = () => fetch(getStoreUrl)
   .then(async (res) => {
     const json = await res.json();
 
-    if (!res.ok) throw new Error(res.statusText);
+    if (!res.ok) throw (json);
 
     return json.store;
   })
@@ -15,14 +15,14 @@ const getStore = () => fetch(getStoreUrl)
   });
 
 const setStore = async (store) => fetch(setStoreUrl, {
-  method: 'post',
+  method : 'post',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ store }),
+  body   : JSON.stringify({ store }),
 })
   .then(async (res) => {
     const json = await res.json();
 
-    if (!res.ok) throw new Error(res.statusText);
+    if (!res.ok) throw (json);
 
     return json.store;
   });

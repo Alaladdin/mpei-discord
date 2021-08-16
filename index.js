@@ -4,11 +4,13 @@ const events = require('./data/events');
 const cron = require('./data/cron');
 const { token } = require('./config');
 
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents        : ['DIRECT_MESSAGES', 'GUILDS', 'GUILD_MESSAGES'],
+  partials       : ['CHANNEL'],
+  allowedMentions: { parse: ['users', 'roles'] },
+});
 
-// init
 client.login(token).then(() => cron.init(client));
-
 client.commands = new Discord.Collection();
 
 commands.init(client);

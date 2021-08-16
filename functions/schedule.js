@@ -11,13 +11,15 @@ module.exports = {
 
     return fetch(url.href)
       .then(async (res) => {
-        const json = await res.json();
+        const data = await res.json();
 
-        // if request error
-        if (!res.ok) throw new Error(res.statusText);
+        if (!res.ok || !data.schedule) throw (data.schedule);
 
-        return json;
+        return data.schedule;
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      });
   },
 };

@@ -1,42 +1,57 @@
 const fetch = require('node-fetch');
 const { version } = require('../package.json');
-const { serverAddress, prefix, isProd } = require('../config');
+const { serverAddress, isProd } = require('../config');
 const { getUniversalUrl } = require('../data/requests');
+const { getRandomArrayItem } = require('../helpers');
+const colors = require('../data/colors');
 
 module.exports = {
-  name: 'status',
+  name       : 'status',
   description: 'Выводит информацию о боте',
-  aliases: ['info', 'i'],
+  aliases    : ['info', 'i'],
   async execute(message) {
-    const msg = [];
-    const serverData = (query) => fetch(getUniversalUrl(query))
+    const getServerData = (query) => fetch(getUniversalUrl(query))
       .then(async (res) => {
         const json = await res.json();
-        if (!res.ok) throw new Error(res.statusText);
+
+        if (!res.ok) throw (json);
+
         return Object.values(json)[0];
       })
       .catch((err) => {
         console.error(err);
-        return 'error';
+        return 'Error';
       });
 
-    // bot info
-    msg.push('```');
+    const actualityEmbed = {
+      color : getRandomArrayItem(colors),
+      author: {
+        name    : 'Status',
+        icon_url: 'https://woka.site/LRS7Mvd10',
+      },
+      fields: [
+        {
+          name  : 'Bot version',
+          value : version,
+          inline: true,
+        },
+        {
+          name  : 'Server version',
+          value : await getServerData('version'),
+          inline: true,
+        },
+        {
+          name : 'isProduction',
+          value: `${isProd}`,
+        },
+        {
+          name : 'Server address',
+          value: serverAddress,
+        },
+      ],
+      timestamp: new Date(),
+    };
 
-    msg.push('- Bot info');
-    msg.push(`· version: ${version}`);
-    msg.push(`· prefix: "${prefix}"`);
-    msg.push(`· isProduction: ${isProd}`);
-
-    // server info
-    msg.push('\n- Server info');
-    msg.push(`· address: ${serverAddress}`);
-    msg.push(`· version: ${await serverData('version')}`);
-    msg.push(`· health: ${await serverData('health')}`);
-    msg.push(`· ping: ${await serverData('ping')}`);
-
-    msg.push('```');
-
-    return message.channel.send(msg, { split: true });
+    return message.channel.send({ embeds: [actualityEmbed] });
   },
 };

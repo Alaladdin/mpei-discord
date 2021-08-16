@@ -1,73 +1,98 @@
 const { prefix } = require('../config');
+const colors = require('../data/colors');
+const {
+  capitalize, getCommand, getRandomArrayItem, checkPermissions,
+} = require('../helpers');
 
 module.exports = {
-  name: 'help',
-  aliases: ['h', 'commands'],
+  name       : 'help',
+  aliases    : ['h', 'commands'],
   description: 'Получает список доступных пользователю команд',
-  arguments: [
-    {
-      name: '[command]',
-      description: 'информация об определенной команде',
-    },
-  ],
-  execute(message, args) {
-    const data = [];
-    const { commands } = message.client;
-
-    if (!args.length) {
-      const userAllowedCommands = commands.filter((command) => {
-        if (message.guild) {
-          const member = message.guild.member(message.author);
-          return member.permissions.has(command.permissions);
-        }
-
-        return !command.permissions;
-      });
-
-      data.push('Список моих командуcов:');
-      data.push(userAllowedCommands.map((command) => `\`${command.name}\` - ${command.description}`)
-        .join('\n'));
-      data.push(`\nОтправь мне \`${prefix}help [название команды]\`, чтобы получить информацию по определенной команде`);
-
-      message.channel.send(data, { split: true });
-      return;
-    }
-
-    const name = args[0].toLowerCase();
-    const command = commands.get(name) || commands.find(
-      (c) => c.aliases && c.aliases.includes(name),
+  arguments  : [{
+    name       : '[command]',
+    description: 'информация об определенной команде',
+  }],
+  getAllCommandsInfo(message) {
+    const embedCommandsList = [];
+    const userAllowedCommands = message.client.commands.filter(
+      (c) => c.permissions === undefined || checkPermissions(message, c.permissions),
     );
 
-    if (!command) {
-      message.reply('я не нашел эту команду в своем крутейшем списке');
-      return;
+    userAllowedCommands.forEach((command) => embedCommandsList.push({
+      name : `${prefix}${command.name}`,
+      value: command.description,
+    }));
+
+    const commandsEmbed = {
+      color : getRandomArrayItem(colors),
+      title : 'Список моих командуcов',
+      fields: embedCommandsList,
+      footer: {
+        text: `Отправь мне ${prefix}help [команда], чтобы получить информацию по команде`,
+      },
+    };
+
+    return message.channel.send({ embeds: [commandsEmbed] });
+  },
+  getCommandInfo(message, command) {
+    const embedCommandsList = [{
+      name : 'Описание',
+      value: command.description,
+    }];
+
+    if (command.aliases) {
+      embedCommandsList.push({
+        name : 'Алиасы',
+        value: command.aliases.map((c) => `\`${c}\``)
+          .join(', '),
+      });
     }
 
-    data.push(`**Name:** ${command.name}`);
-    if (command.description) data.push(`**Description:** ${command.description}`);
-    if (command.aliases) data.push(`**Aliases:** \`${command.aliases.join('`, `')}\``);
-
-    if (command.usage) data.push(`**Usage:** \`${prefix}${command.name} ${command.usage}\``);
-
-    // command arguments
     if (command.arguments) {
       const commandArgs = [];
-      Object.values(command.arguments).forEach((c) => {
-        commandArgs.push(`\`${c.name}\` - ${c.description}`);
-        if (c.permissions) commandArgs.push(`Права: \`[${c.permissions.join(', ')}]\`\n`);
+
+      Object.values(command.arguments)
+        .forEach((c) => {
+          const arg = [];
+
+          arg.push(`\`${c.name}\` - ${c.description}`);
+          if (c.permissions) arg.push(`Права: \`[${c.permissions.join(', ')}]\``);
+
+          commandArgs.push(arg.join('\n'));
+        });
+
+      embedCommandsList.push({
+        name  : 'Аргументы',
+        value : commandArgs.join('\n'),
+        inline: true,
       });
-      data.push(`**Arguments:** \n${commandArgs.join('\n')}`);
     }
 
-    // we cannot check roles wo server -> send data
-    // command roles
     if (command.permissions) {
-      const permissions = [];
-      command.permissions.forEach((p) => permissions.push(p));
-      data.push(`**Permissions:** \`[${permissions.join(', ')}]\``);
+      embedCommandsList.push({
+        name : 'Права',
+        value: command.permissions.map((p) => `\`${p}\``)
+          .join(', '),
+      });
     }
 
-    // send data
-    message.channel.send(data, { split: true });
+    const commandsEmbed = {
+      color : getRandomArrayItem(colors),
+      title : `Команда: ${capitalize(command.name)}`,
+      fields: embedCommandsList,
+    };
+
+    return message.channel.send({ embeds: [commandsEmbed] });
+  },
+  execute(message, args) {
+    const { commands } = message.client;
+
+    if (!args.length) return this.getAllCommandsInfo(message);
+
+    const command = getCommand(commands, args[0]);
+
+    if (command) return this.getCommandInfo(message, command);
+
+    return message.reply('Я не нашел эту команду в своем крутейшем списке');
   },
 };

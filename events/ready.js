@@ -6,8 +6,8 @@ module.exports = {
   once: true,
   async execute(client) {
     await client.user.setPresence({
-      activity: isProd ? activities.default : activities.developing,
-      status: 'dnd',
+      activities: isProd ? [activities.default] : [activities.developing],
+      status    : 'dnd',
     });
     console.info(`Logged in as ${client.user.tag}`);
   },

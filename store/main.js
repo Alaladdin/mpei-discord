@@ -10,16 +10,16 @@ let state = {};
   const remoteStore = await getStore().catch(() => ({}));
 
   state = {
-    savedShortId: remoteStore.savedShortId || '',
+    savedShortId    : remoteStore.savedShortId || '',
     actualityChannel: remoteStore.actualityChannel || '',
-    actualityTime: remoteStore.actualityTime || '0 0 22 * * *',
+    actualityTime   : remoteStore.actualityTime || '0 0 22 * * *',
   };
 })();
 
 const getters = {
-  getSavedShortId: () => state.savedShortId,
+  getSavedShortId    : () => state.savedShortId,
   getActualityChannel: () => state.actualityChannel,
-  getActualityTime: () => state.actualityTime,
+  getActualityTime   : () => state.actualityTime,
 };
 
 const setters = {
