@@ -1,7 +1,7 @@
 {
   "name": "mpei-discord",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "mpei bot for discord",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "lint": "eslint ./ **.js",
     "lint:fix": "npm run lint -- --fix",
     "deploy:setup": "pm2 deploy production setup",
-    "deploy:prod": "pm2 deploy ecosystem.config.js production --force"
+    "deploy:prod": "pm2 deploy ecosystem.config.js production --force",
+    "prepare": "husky install"
   },
   "keywords": [
     "mpei",
@@ -26,7 +27,7 @@
     "url": "https://github.com/Alaladdin/mpei-discord.git/issues"
   },
   "engines": {
-    "node": "^16.6"
+    "node": ">=16.6"
   },
   "author": "Alaladdin",
   "license": "ISC",
@@ -42,6 +43,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-regex": "^1.7.0",
+    "husky": "^7.0.1",
     "nodemon": "^2.0.12"
   }
 }
