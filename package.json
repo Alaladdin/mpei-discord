@@ -1,7 +1,7 @@
 {
   "name": "mpei-discord",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "mpei bot for discord",
   "main": "index.js",
   "scripts": {
@@ -13,13 +13,10 @@
     "deploy:prod": "pm2 deploy ecosystem.config.js production --force",
     "prepare": "husky install"
   },
-  "hooks": {
-    "pre-commit": "npm run lint:fix",
-    "post-receive": "npm run deploy:prod"
-  },
   "keywords": [
     "mpei",
     "discord",
+    "discordjs",
     "bot",
     "nodejs"
   ],
@@ -28,7 +25,7 @@
     "url": "git+https://github.com/Alaladdin/mpei-discord.git"
   },
   "bugs": {
-    "url": "https://github.com/Alaladdin/mpei-discord.git/issues"
+    "url": "https://github.com/Alaladdin/mpei-discord/issues"
   },
   "engines": {
     "node": ">=16.6"
