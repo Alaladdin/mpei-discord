@@ -1,7 +1,7 @@
 {
   "name": "mpei-discord",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "mpei bot for discord",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,10 @@
     "deploy:setup": "pm2 deploy production setup",
     "deploy:prod": "pm2 deploy ecosystem.config.js production --force",
     "prepare": "husky install"
+  },
+  "hooks": {
+    "pre-commit": "npm run lint:fix",
+    "post-receive": "npm run deploy:prod"
   },
   "keywords": [
     "mpei",
