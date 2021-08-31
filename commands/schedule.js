@@ -1,7 +1,7 @@
 const moment = require('moment');
 const { defaultDateFormat, serverDateFormat } = require('../config');
-const pschedule = require('../functions/schedule');
-const { capitalize, getRandomArrayItem } = require('../helpers');
+const getSchedule = require('../functions/getSchedule');
+const { getRandomArrayItem } = require('../helpers');
 const colors = require('../data/colors');
 
 module.exports = {
@@ -29,39 +29,45 @@ module.exports = {
   sendSchedule(message, schedule) {
     schedule.forEach((i) => {
       const scheduleFields = [];
-      const scheduleDate = moment(new Date(i.date))
-        .format(defaultDateFormat);
+      const scheduleDate = moment(new Date(i.date)).format(defaultDateFormat);
       const scheduleEmbed = {
-        color    : getRandomArrayItem(colors),
-        title    : `[${i.dayOfWeekString}] ${i.discipline} - ${scheduleDate}`,
-        fields   : scheduleFields,
-        timestamp: new Date(`${i.date} ${i.beginLesson}`),
+        color      : getRandomArrayItem(colors),
+        title      : `[${i.dayOfWeekString}] ${scheduleDate} (${i.kindOfWork})`,
+        description: `\`${i.discipline}\``,
+        fields     : scheduleFields,
+        timestamp  : new Date(`${i.date} ${i.beginLesson}`),
+        footer     : {
+          text: `${i.beginLesson} - ${i.endLesson}`,
+        },
       };
 
-      scheduleFields.push(
-        {
-          name : 'Время',
-          value: `${i.beginLesson} - ${i.endLesson}`,
-        },
-        {
-          name : 'Тип',
-          value: capitalize(i.kindOfWork),
-        },
-        {
-          name : 'Препод',
-          value: i.lecturer,
-        },
-      );
+      scheduleFields.push({
+        name : 'Препод',
+        value: i.lecturer,
+      });
+
+      if (i.building !== '-') {
+        scheduleFields.push({
+          name  : 'Кабинет',
+          value : `${i.auditorium} (${i.building})`,
+          inline: true,
+        });
+      }
+
+      if (i.group) {
+        scheduleFields.push({
+          name  : 'Группа',
+          value : `${i.group}`,
+          inline: true,
+        });
+      }
 
       return message.channel.send({ embeds: [scheduleEmbed] });
     });
   },
   async execute(message, args) {
-    const today = moment()
-      .format(serverDateFormat);
-    const tomorrow = moment()
-      .add(1, 'days')
-      .format(serverDateFormat);
+    const today = moment().format(serverDateFormat);
+    const tomorrow = moment().add(1, 'days').format(serverDateFormat);
     const [command] = args;
     const argsInstructions = {
       tw: {
@@ -69,9 +75,7 @@ module.exports = {
         start : tomorrow,
         finish: tomorrow,
       },
-      week: {
-        name: 'неделю',
-      },
+      week    : { name: 'неделю' },
       nextweek: {
         name : 'следующую неделю',
         start: moment()
@@ -105,7 +109,7 @@ module.exports = {
     return message.channel.send('`Получаю данные с сервера...`')
       .then(async (sentMessage) => {
         const selectedDate = argsInstructions[!args.length ? 'empty' : command.toLowerCase()];
-        const schedule = await pschedule.get(selectedDate);
+        const schedule = await getSchedule(selectedDate);
 
         if (!schedule) return sentMessage.edit('`Ебаные сервера МЭИ снова не отвечают`');
 

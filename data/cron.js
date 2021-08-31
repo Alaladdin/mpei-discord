@@ -1,6 +1,6 @@
 const schedule = require('node-schedule');
 const { getters: storeGetter, setters: storeSetter, eventEmitter } = require('../store/index');
-const { get: getActuality } = require('../functions/actuality');
+const getActuality = require('../functions/getActuality');
 const { sendMessageToUsers, getRandomArrayItem } = require('../helpers');
 const { admins } = require('./rights');
 const colors = require('./colors');

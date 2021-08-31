@@ -27,7 +27,4 @@ const setStore = async (store) => fetch(setStoreUrl, {
     return json.store;
   });
 
-module.exports = {
-  getStore,
-  setStore,
-};
+module.exports = { getStore, setStore };

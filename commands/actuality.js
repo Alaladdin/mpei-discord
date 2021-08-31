@@ -1,7 +1,7 @@
 const { MessageButton, MessageActionRow } = require('discord.js');
 const { getters: storeGetter } = require('../store/index');
 const { getRandomArrayItem } = require('../helpers');
-const { get: getActuality } = require('../functions/actuality');
+const getActuality = require('../functions/getActuality');
 const colors = require('../data/colors');
 
 module.exports = {
