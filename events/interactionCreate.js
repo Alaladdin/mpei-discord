@@ -19,7 +19,10 @@ module.exports = {
 
     return storeSetter.setActualityChannel(newChannelId)
       .then(() => {
-        interaction.followUp(`Канал для автопостинга актуалочки изменен${currChannelId ? ` с ${currChannel.toString()}` : ''} на ${newChannel.toString()}`);
+        const autopostingChannelChangedText = 'Канал для автопостинга актуалочки изменен';
+        const changedFromText = currChannelId ? `с ${currChannel.toString()}` : '';
+
+        interaction.followUp(`${autopostingChannelChangedText} ${changedFromText} на ${newChannel.toString()}`);
       })
       .catch((err) => {
         console.error(err);
@@ -32,7 +35,10 @@ module.exports = {
 
     await storeSetter.setActualityTime(formattedTime)
       .then(() => {
-        interaction.followUp(`Время автопостинга актуалочки изменено ${currTime ? `с \`${currTime}\`` : ''} на \`${formattedTime}\``);
+        const autopostingTimeChangedText = 'Время автопостинга актуалочки изменено';
+        const changedFromText = currTime ? `с \`${currTime}\`` : '';
+
+        interaction.followUp(`${autopostingTimeChangedText} ${changedFromText} на \`${formattedTime}\``);
       })
       .catch((err) => {
         console.error(err);

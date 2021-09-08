@@ -10,10 +10,17 @@ module.exports = {
   },
   plugins: ['regex'],
   rules  : {
-    'no-console'     : process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger'    : process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'linebreak-style': ['warn', 'windows'],
-    'key-spacing'    : ['error', {
+    'no-console'          : process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger'         : process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'linebreak-style'     : ['warn', 'windows'],
+    'object-curly-newline': ['error', {
+      ObjectExpression : { minProperties: 6, multiline: true, consistent: true },
+      ObjectPattern    : { minProperties: 6, multiline: true, consistent: true },
+      ImportDeclaration: { minProperties: 6, multiline: true, consistent: true },
+      ExportDeclaration: { minProperties: 6, multiline: true, consistent: true },
+    }],
+    'max-len'    : ['error', 120],
+    'key-spacing': ['error', {
       singleLine: {
         beforeColon: false,
         afterColon : true,
