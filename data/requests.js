@@ -1,9 +1,9 @@
-const { serverAddress, authToken } = require('../config');
+const { serverAddress } = require('../config');
 
 module.exports = {
   getUniversalUrl: (query) => `${serverAddress}/${query}`,
-  getStoreUrl    : `${serverAddress}/getDiscordBotStore?authToken=${authToken}`,
-  setStoreUrl    : `${serverAddress}/setDiscordBotStore?authToken=${authToken}`,
+  getStoreUrl    : `${serverAddress}/getDiscordBotStore`,
+  setStoreUrl    : `${serverAddress}/setDiscordBotStore`,
   getActualityUrl: `${serverAddress}/getActuality`,
   getScheduleUrl : `${serverAddress}/getSchedule`,
 };
