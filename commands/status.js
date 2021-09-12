@@ -49,7 +49,6 @@ module.exports = {
           value: serverAddress,
         },
       ],
-      timestamp: new Date(),
     };
 
     return message.channel.send({ embeds: [actualityEmbed] });
