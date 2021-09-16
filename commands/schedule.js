@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { defaultDateFormat, serverDateFormat } = require('../config');
+const { serverDateFormat } = require('../config');
 const getSchedule = require('../functions/getSchedule');
 const { getRandomArrayItem } = require('../helpers');
 const colors = require('../data/colors');
@@ -29,10 +29,9 @@ module.exports = {
   sendSchedule(message, schedule) {
     schedule.forEach((i) => {
       const scheduleFields = [];
-      const scheduleDate = moment(new Date(i.date)).format(defaultDateFormat);
       const scheduleEmbed = {
         color      : getRandomArrayItem(colors),
-        title      : `[${i.dayOfWeekString}] ${scheduleDate} (${i.kindOfWork})`,
+        title      : `[${i.dayOfWeekString}] ${i.date} (${i.kindOfWork})`,
         description: `\`${i.discipline}\``,
         fields     : scheduleFields,
         timestamp  : new Date(`${i.date} ${i.beginLesson}`),
