@@ -1,4 +1,5 @@
 const { MessageButton, MessageActionRow } = require('discord.js');
+const moment = require('moment');
 const { getters: storeGetter } = require('../store/index');
 const { getRandomArrayItem } = require('../helpers');
 const getActuality = require('../functions/getActuality');
@@ -32,7 +33,7 @@ module.exports = {
             icon_url: 'https://woka.site/LRS7Mvd10',
           },
           description: actuality[embedContent] || 'Пусто 😔',
-          timestamp  : actuality.date,
+          timestamp  : moment(actuality.updatedAt, 'DD.MM HH:mm'),
         };
 
         return message.channel.send({ embeds: [actualityEmbed] });

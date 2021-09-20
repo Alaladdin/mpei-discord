@@ -1,4 +1,5 @@
 const schedule = require('node-schedule');
+const moment = require('moment');
 const { getters: storeGetter, setters: storeSetter, eventEmitter } = require('../store/index');
 const getActuality = require('../functions/getActuality');
 const { sendMessageToUsers, getRandomArrayItem } = require('../helpers');
@@ -28,7 +29,7 @@ module.exports = {
           icon_url: 'https://woka.site/LRS7Mvd10',
         },
         description: a.content,
-        timestamp  : actuality.date,
+        timestamp  : moment(actuality.updatedAt, 'DD.MM HH:mm'),
       };
 
       return channel.send({ embeds: [actualityEmbed] });
