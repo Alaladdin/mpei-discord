@@ -3,11 +3,12 @@ require('dotenv').config();
 module.exports = {
   apps: [
     {
-      name        : 'mdis',
-      script      : 'index.js',
-      watch       : true,
-      ignore_watch: ['node_modules', 'store/localStore.json'],
-      env         : {
+      name         : 'mdis',
+      script       : 'index.js',
+      restart_delay: 10000,
+      watch        : true,
+      ignore_watch : ['node_modules', 'store/localStore.json'],
+      env          : {
         NODE_ENV: 'development',
       },
       env_production: {
@@ -24,7 +25,6 @@ module.exports = {
         host: process.env.DEPLOY_HOST,
         port: process.env.DEPLOY_PORT,
       }],
-      // ssh_options: 'StrictHostKeyChecking=no',
       ref          : 'origin/main',
       repo         : 'https://github.com/Alaladdin/mpei-discord',
       path         : '$HOME/dev/mpei-discord',
