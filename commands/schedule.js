@@ -9,22 +9,9 @@ module.exports = {
   description: 'Расписание на сегодняшний день',
   aliases    : ['s', 'расписание', 'р'],
   arguments  : [
-    {
-      name       : 'tw',
-      description: 'расписание на завтра',
-    },
-    {
-      name       : 'week',
-      description: 'расписание на неделю',
-    },
-    {
-      name       : 'nextWeek',
-      description: 'расписание следующую неделю',
-    },
-    {
-      name       : 'month',
-      description: 'расписание месяц',
-    },
+    { name: 'tw', description: 'расписание на завтра' },
+    { name: 'week', description: 'расписание на неделю' },
+    { name: 'month', description: 'расписание месяц' },
   ],
   sendSchedule(message, schedule) {
     schedule.forEach((i) => {
@@ -65,33 +52,24 @@ module.exports = {
     });
   },
   async execute(message, args) {
+    const [command] = args;
     const today = moment().format(serverDateFormat);
     const tomorrow = moment().add(1, 'days').format(serverDateFormat);
-    const [command] = args;
     const argsInstructions = {
       tw: {
         name  : 'завтра',
         start : tomorrow,
         finish: tomorrow,
       },
-      week    : { name: 'неделю' },
-      nextweek: {
-        name : 'следующую неделю',
-        start: moment()
-          .add(1, 'weeks')
-          .startOf('isoWeek')
-          .format(serverDateFormat),
-        finish: moment()
-          .add(1, 'weeks')
-          .endOf('isoWeek')
-          .format(serverDateFormat),
+      week: {
+        name  : 'неделю',
+        start : today,
+        finish: moment().add(1, 'week').format(serverDateFormat),
       },
       month: {
         name  : 'месяц',
         start : today,
-        finish: moment()
-          .add(1, 'month')
-          .format(serverDateFormat),
+        finish: moment().add(1, 'month').format(serverDateFormat),
       },
       empty: {
         name  : 'сегодня',
