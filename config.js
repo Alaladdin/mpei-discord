@@ -7,7 +7,7 @@ module.exports = {
   authToken        : process.env.AUTH_TOKEN,
   prefix           : process.env.PREFIX,
   token            : process.env.TOKEN,
-  serverAddress    : isProd ? process.env.PROD_SERVER : process.env.DEV_SERVER,
+  serverAddress    : process.env.SERVER_ADDRESS,
   defaultDateFormat: 'DD.MM',
   serverDateFormat : 'YYYY.MM.DD',
   channelIds       : {
