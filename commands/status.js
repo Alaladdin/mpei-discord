@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const { version } = require('../package.json');
-const { serverAddress, isProd } = require('../config');
+const { isProd } = require('../config');
 const { getUniversalUrl } = require('../data/requests');
 const { getRandomArrayItem } = require('../helpers');
 const colors = require('../data/colors');
@@ -41,12 +41,9 @@ module.exports = {
           inline: true,
         },
         {
-          name : 'isProduction',
-          value: `${isProd}`,
-        },
-        {
-          name : 'Server address',
-          value: serverAddress,
+          name  : 'isProduction',
+          value : `${isProd}`,
+          inline: true,
         },
       ],
     };
