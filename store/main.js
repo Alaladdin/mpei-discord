@@ -23,7 +23,7 @@ const getters = {
 };
 
 const setters = {
-  async listener(eventName) {
+  async handleUpdate(eventName) {
     // write config to the DB
     return setStore(state)
       .then((updatedState) => {
@@ -33,15 +33,15 @@ const setters = {
   },
   async setSavedShortId(newVal = '') {
     state.savedShortId = newVal;
-    return this.listener('savedShortId');
+    return this.handleUpdate('savedShortId');
   },
   async setActualityChannel(newVal = '') {
     state.actualityChannel = newVal;
-    return this.listener('actualityChannel');
+    return this.handleUpdate('actualityChannel');
   },
   async setActualityTime(newVal = '') {
     state.actualityTime = newVal;
-    return this.listener('actualityTime');
+    return this.handleUpdate('actualityTime');
   },
 };
 

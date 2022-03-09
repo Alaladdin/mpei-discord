@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const commands = require('./data/commands');
 const events = require('./data/events');
-const cron = require('./data/cron');
+const cron = require('./cron');
 const { token } = require('./config');
 
 const client = new Discord.Client({

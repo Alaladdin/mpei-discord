@@ -5,9 +5,11 @@ const getCommand = (commands, commandName) => {
 };
 
 const checkPermissions = (message, permissions) => {
-  if (!message.guild) return false;
+  const { guild, member } = message;
 
-  return !!(message.member.roles && message.member.permissions.has(permissions));
+  if (!guild) return false;
+
+  return !!(member.roles && member.permissions.has(permissions));
 };
 
 const getRandomInt = (max = 1) => Math.floor(Math.random() * max);

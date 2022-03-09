@@ -10,8 +10,4 @@ module.exports = {
   serverAddress    : process.env.SERVER_ADDRESS,
   defaultDateFormat: 'DD.MM',
   serverDateFormat : 'YYYY.MM.DD',
-  channelIds       : {
-    actuality: isProd ? '832343311368192081' : '822176467978158100',
-    dev      : '822176467978158100',
-  },
 };

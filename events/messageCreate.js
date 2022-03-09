@@ -7,10 +7,8 @@ module.exports = {
     if (!msg.content.startsWith(prefix) || msg.content.length <= 1 || msg.author.bot) return;
 
     const commandBody = msg.content.slice(prefix.length);
-    const args = commandBody.split(' ')
-      .filter((arg) => arg);
-    const commandName = args.shift()
-      .toLowerCase();
+    const args = commandBody.split(' ').filter((arg) => arg);
+    const commandName = args.shift().toLowerCase();
     const command = getCommand(client.commands, commandName);
 
     // call command
