@@ -1,7 +1,7 @@
 {
   "name": "mpei-discord",
   "private": true,
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "mpei bot for discord",
   "main": "index.js",
   "scripts": {
@@ -35,11 +35,11 @@
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "moment": "^2.29.1",
-    "node-fetch": "2.6.5",
+    "node-fetch": "2.6.7",
     "node-schedule": "^2.1.0"
   },
   "devDependencies": {
-    "eslint": "^8.10.0",
+    "eslint": "^8.11.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "nodemon": "^2.0.15"
