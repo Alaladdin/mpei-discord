@@ -32,7 +32,7 @@
   "author": "Alaladdin",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^13.6.0",
+    "discord.js": "^14.14.1",
     "dotenv": "^16.0.0",
     "moment": "^2.29.1",
     "node-fetch": "2.6.7",
